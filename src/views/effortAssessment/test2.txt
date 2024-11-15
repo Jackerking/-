@@ -14,12 +14,12 @@
       <span class="value-display">{{ factor.selectedValue }}</span>
       <el-button type="primary" size="small" @click="showEditDialog(index)">编辑选项</el-button>
 
-      <!-- 编辑选项对话框 -->
       <el-dialog v-model="editDialogVisible[index]" :title="`编辑 ${factor.label} 选项`" width="30%">
         <el-form>
           <el-form-item v-for="(option, optionIndex) in factor.options" :key="optionIndex" :label="`选项 ${optionIndex + 1}`">
-            <el-input v-model="option.label" placeholder="请输入选项标签"></el-input>
-            <el-input v-model.number="option.value" placeholder="请输入选项值" style="margin-top: 10px;" />
+            <!-- 使用临时的值来进行编辑 -->
+            <el-input v-model="factor.tempEditOption.label" placeholder="请输入选项标签"></el-input>
+            <el-input v-model.number="factor.tempEditOption.value" placeholder="请输入选项值" type="number" step="0.1" style="margin-top: 10px;" />
           </el-form-item>
         </el-form>
         <template #footer>
@@ -29,6 +29,7 @@
           </span>
         </template>
       </el-dialog>
+
     </div>
 
     <!-- ECharts 条形图 -->
@@ -41,45 +42,52 @@ import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
 
-// 定义因素列表
+// 定义因子列表时，添加 tempEditOption 来保存临时编辑值
 const factors = ref([
   {
     name: 'SF',
     label: 'SF',
     selectedValue: '',
-    options: []
+    options: [],
+    tempEditOption: { label: '', value: null } // 临时编辑的值
   },
   {
     name: 'BD',
     label: 'BD',
     selectedValue: '',
-    options: []
+    options: [],
+    tempEditOption: { label: '', value: null }
   },
   {
     name: 'QR',
     label: 'QR',
     selectedValue: '',
-    options: []
+    options: [],
+    tempEditOption: { label: '', value: null }
   },
   {
     name: 'AT',
     label: 'AT',
     selectedValue: '',
-    options: []
+    options: [],
+    tempEditOption: { label: '', value: null }
   },
   {
     name: 'SL',
     label: 'SL',
     selectedValue: '',
-    options: []
+    options: [],
+    tempEditOption: { label: '', value: null }
   },
   {
     name: 'DT',
     label: 'DT',
     selectedValue: '',
-    options: []
+    options: [],
+    tempEditOption: { label: '', value: null }
   }
 ]);
+
 
 // 对话框可见性状态
 const editDialogVisible = ref(factors.value.map(() => false));
@@ -95,15 +103,23 @@ const factorTypes = ['SF', 'BD', 'QR', 'AT', 'SL', 'DT'];  // 对应的 factor_t
 const fetchFactorOptions = async (stdId: string, factorType: string) => {
   try {
     const response = await axios.get(`http://localhost:9000/Factor/find`, {
-      params: { factor_type: factorType, stdId: stdId }  // 使用查询参数
+      params: { factor_type: factorType, stdId: stdId }
     });
+
+    console.log('后端返回的数据:', response.data);  // 打印后端返回的数据
+
+    // 确保返回的数据包含 Factors 且是数组
     const factorData = response.data.Factors;
-    const factor = factors.value.find(factor => factor.name === factorType);
-    if (factor) {
-      factor.options = factorData.map(item => ({
-        label: item.factor_name,
-        value: item.factor_value
-      }));
+    if (Array.isArray(factorData)) {
+      const factor = factors.value.find(factor => factor.name === factorType);
+      if (factor) {
+        factor.options = factorData.map(item => ({
+          label: item.factor_name,
+          value: item.factor_value
+        }));
+      }
+    } else {
+      console.error('返回的 Factors 数据不正确:', factorData);
     }
   } catch (error) {
     console.error('获取因子选项失败:', error);
@@ -111,22 +127,51 @@ const fetchFactorOptions = async (stdId: string, factorType: string) => {
 };
 
 
+
 // 初始化时根据 stdId 和 factor_type 获取因子数据
 onMounted(() => {
   factorTypes.forEach(factorType => {
     fetchFactorOptions(stdId, factorType);
   });
+  initChart();  // 初始化图表
 });
 
 // 显示编辑对话框
 const showEditDialog = (index: number) => {
+  const factor = factors.value[index];
+  // 如果没有选中的值，默认填充第一个选项
+  const selectedOption = factor.options.find(option => option.value === factor.selectedValue) 
+  
+  if (selectedOption) {
+    factor.tempEditOption = { label: selectedOption.label, value: selectedOption.value };
+  }
   editDialogVisible.value[index] = true;
 };
 
-// 保存编辑的选项
+
 const saveOptions = (index: number) => {
+  const factor = factors.value[index];
+
+  // 找到当前选中的选项并更新其 label 和 value
+  const selectedOption = factor.options.find(option => option.value === factor.selectedValue);
+  console.log('选中的选项:', selectedOption);
+  if (selectedOption) {
+    // 更新选中的选项的 label 和 value
+    selectedOption.label = factor.tempEditOption.label;
+    selectedOption.value = factor.tempEditOption.value;
+  }
+  // 更新当前选中的值
+  factor.selectedValue = factor.tempEditOption.value;
+  // 关闭编辑对话框
   editDialogVisible.value[index] = false;
+
+  // 更新图表
+  if(selectedOption){
+    updateChart();
+  }
 };
+
+
 
 // 取消编辑
 const cancelEdit = (index: number) => {
@@ -175,6 +220,7 @@ const updateChart = () => {
     series: [{ data: newData }]
   });
 };
+
 
 </script>
 

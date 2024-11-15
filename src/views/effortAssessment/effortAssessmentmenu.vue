@@ -14,22 +14,20 @@
       <span class="value-display">{{ factor.selectedValue }}</span>
       <el-button type="primary" size="small" @click="showEditDialog(index)">编辑选项</el-button>
 
-      <!-- 编辑选项对话框 -->
+      <!-- 编辑对话框 -->
       <el-dialog v-model="editDialogVisible[index]" :title="`编辑 ${factor.label} 选项`" width="30%">
-          <el-form>
-              <el-form-item v-for="(option, optionIndex) in factor.options" :key="optionIndex" :label="`选项 ${optionIndex + 1}`">
-              <el-input v-model="option.label" placeholder="请输入选项标签"></el-input>
-              <el-input v-model.number="option.value" placeholder="请输入选项值" style="margin-top: 10px;"></el-input>
-              </el-form-item>
-          </el-form>
-          <template #footer>
-              <span class="dialog-footer">
-              <el-button @click="cancelEdit(index)">取 消</el-button>
-              <el-button type="primary" @click="saveOptions(index)">
-                  确 定
-              </el-button>
-              </span>
-          </template>
+        <el-form>
+          <el-form-item v-for="(option, optionIndex) in factor.options" :key="optionIndex" :label="`选项 ${optionIndex + 1}`">
+            <el-input v-model="factor.tempEditOption[optionIndex].label" placeholder="请输入选项标签"></el-input>
+            <el-input v-model.number="factor.tempEditOption[optionIndex].value" placeholder="请输入选项值" type="number" step="0.1" style="margin-top: 10px;" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="cancelEdit(index)">取 消</el-button>
+            <el-button type="primary" @click="saveOptions(index)">确 定</el-button>
+          </span>
+        </template>
       </el-dialog>
     </div>
 
@@ -39,106 +37,92 @@
 </template>
 
 <script setup lang="ts">
-import { ref,onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 import * as echarts from 'echarts';
 
-// 定义因素列表
 const factors = ref([
-  {
-    name: 'SF',
-    label: 'SF',
-    selectedValue: '',
-    options: [
-      { label: '选项 1', value: 10 },
-      { label: '选项 2', value: 20 },
-      { label: '选项 3', value: 30 }
-    ]
-  },
-  {
-    name: 'BD',
-    label: 'BD',
-    selectedValue: '',
-    options: [
-      { label: '选项 A', value: 15 },
-      { label: '选项 B', value: 25 },
-      { label: '选项 C', value: 35 }
-    ]
-  },
-  {
-    name: 'QR',
-    label: 'QR',
-    selectedValue: '',
-    options: [
-      { label: '选项 X', value: 5 },
-      { label: '选项 Y', value: 15 },
-      { label: '选项 Z', value: 25 }
-    ]
-  },
-  {
-    name: 'AT',
-    label: 'AT',
-    selectedValue: '',
-    options: [
-      { label: '选项 1', value: 12 },
-      { label: '选项 2', value: 22 },
-      { label: '选项 3', value: 32 }
-    ]
-  },
-  {
-    name: 'SL',
-    label: 'SL',
-    selectedValue: '',
-    options: [
-      { label: '选项 A', value: 8 },
-      { label: '选项 B', value: 18 },
-      { label: '选项 C', value: 28 }
-    ]
-  },
-  {
-    name: 'DT',
-    label: 'DT',
-    selectedValue: '',
-    options: [
-      { label: '选项 A', value: 8 },
-      { label: '选项 B', value: 18 },
-      { label: '选项 C', value: 28 }
-    ]
-  }
+  { name: 'SF', label: 'SF', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'BD', label: 'BD', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'QR', label: 'QR', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'AT', label: 'AT', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'SL', label: 'SL', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'DT', label: 'DT', selectedValue: '', options: [], tempEditOption: [] }
 ]);
 
-// 对话框可见性状态
 const editDialogVisible = ref(factors.value.map(() => false));
-
-// ECharts 图表容器
 const chartContainer = ref(null);
+const stdId = '123';
+const factorTypes = ['SF', 'BD', 'QR', 'AT', 'SL', 'DT'];
 
+const fetchFactorOptions = async (stdId: string, factorType: string) => {
+  try {
+    const response = await axios.get(`http://localhost:9000/Factor/find`, {
+      params: { factor_type: factorType, stdId: stdId }
+    });
 
-// 显示编辑对话框
+    const factorData = response.data.Factors;
+    if (Array.isArray(factorData)) {
+      const factor = factors.value.find(factor => factor.name === factorType);
+      if (factor) {
+        factor.options = factorData.map(item => ({
+          label: item.factor_name,
+          value: item.factor_value
+        }));
+        // 初始化 tempEditOption 为选项数量
+        factor.tempEditOption = factor.options.map(option => ({
+          label: option.label,
+          value: option.value
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('获取因子选项失败:', error);
+  }
+};
+
+onMounted(() => {
+  factorTypes.forEach(factorType => {
+    fetchFactorOptions(stdId, factorType);
+  });
+  initChart();
+});
+
 const showEditDialog = (index: number) => {
-  console.log(`弹出对话框: ${index}`);
+  const factor = factors.value[index];
+  // 在弹窗打开时显示当前因子的所有选项
+  factor.tempEditOption = factor.options.map(option => ({
+    label: option.label,
+    value: option.value
+  }));
   editDialogVisible.value[index] = true;
 };
 
-// 保存编辑的选项
 const saveOptions = (index: number) => {
+  const factor = factors.value[index];
+  // 更新 options 中的值
+  factor.options.forEach((option, optionIndex) => {
+    option.label = factor.tempEditOption[optionIndex].label;
+    option.value = factor.tempEditOption[optionIndex].value;
+  });
+
+  factor.selectedValue = ""; // 清空已选值
+
   editDialogVisible.value[index] = false;
+
+  updateChart();
 };
 
-// 取消编辑
 const cancelEdit = (index: number) => {
   editDialogVisible.value[index] = false;
 };
 
-// 选择变化处理函数
 const handleSelectionChange = (index: number) => {
-  console.log(`${factors.value[index].label} 选择的值: ${factors.value[index].selectedValue}`);
-  updateChart();  // 更新图表
+  updateChart();
 };
 
-// 初始化 ECharts 图表
 const initChart = () => {
   const chart = echarts.init(chartContainer.value);
-
   const chartOptions = {
     tooltip: {
       trigger: 'axis',
@@ -146,36 +130,28 @@ const initChart = () => {
     },
     xAxis: {
       type: 'category',
-      data: ['SF', 'BD', 'QR', 'AT', 'SL','DT'],  // x 轴标签
+      data: ['SF', 'BD', 'QR', 'AT', 'SL', 'DT'],
       axisLabel: { interval: 0 }
     },
     yAxis: { type: 'value' },
     series: [{
       name: '选项值',
       type: 'bar',
-      barWidth: 60,  // 设置柱宽度
+      barWidth: 60,
       data: factors.value.map(factor => factor.selectedValue || 0),
       emphasis: { focus: 'series' }
     }]
   };
-
   chart.setOption(chartOptions);
 };
 
-// 更新图表数据
 const updateChart = () => {
   const chart = echarts.getInstanceByDom(chartContainer.value);
   const newData = factors.value.map(factor => factor.selectedValue || 0);
-
   chart.setOption({
     series: [{ data: newData }]
   });
 };
-
-onMounted(() => {
-  initChart();
-});
-
 </script>
 
 <style lang="scss" scoped>
@@ -216,6 +192,6 @@ onMounted(() => {
 .chart-container {
   width: 100%;
   height: 400px;
-  margin: 0 auto;  /* 水平居中 */
+  margin: 0 auto;
 }
 </style>
