@@ -83,9 +83,9 @@ onMounted(()=>{
 
 <style>
 .demo-tabs>.el-tabs__content {
-    padding: 32px;
+    padding: 5px;
     color: #6b778c;
-    font-size: 32px;
+    font-size: 5px;
     font-weight: 600;
 }
 </style>
