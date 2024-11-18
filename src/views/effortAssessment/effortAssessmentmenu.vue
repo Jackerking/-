@@ -1,4 +1,5 @@
 <template>
+  <Tabs></Tabs>
   <div>
       <!-- 造价标准选择 -->
       <div class="standard-container">

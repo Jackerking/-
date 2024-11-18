@@ -18,7 +18,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/web': {
-        target: 'http://localhost:9999', // 后端服务的地址
+        target: 'http://localhost:9000', // 后端服务的地址
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/web/, '')
       },

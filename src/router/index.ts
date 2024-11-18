@@ -78,7 +78,16 @@ const routes: Array<RouteRecordRaw> = [
       },
       
 },
-
+{
+  path:"/FunctionPointEvaluation",
+  name:"FunctionPointEvaluation",
+  component: () => import("../views/effortAssessment/FunctionPointEvaluation.vue"),
+  meta:{
+          title:"功能点评估",
+          icon:"Menu",
+      },
+      
+},
 {
   path:"/industryData",
   name:"industryData",
@@ -110,6 +119,15 @@ const routes: Array<RouteRecordRaw> = [
   path:"/userdetail",
   name:"userdetail",
   component: () => import("../views/user/userdetail.vue"),
+      meta:{
+          title:"用户详情", 
+          icon:"Menu",
+  }
+},
+{
+  path:"/Standards",
+  name:"Standards",
+  component: () => import("../views/effortAssessment/Standards.vue"),
       meta:{
           title:"用户详情", 
           icon:"Menu",
