@@ -89,7 +89,6 @@
         max="100"
         style="width: 100px; margin-left: 0px;"
       />
-      <span>{{ pdrValue }}</span> <!-- 显示当前PDR值 -->
     </div>
 
         <!-- 新标准的输入弹窗 -->
