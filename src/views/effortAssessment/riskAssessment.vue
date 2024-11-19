@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch,reactive } from 'vue';
 import * as echarts from 'echarts';
 import Tabs from '@/components/tabs/tabs.vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -10,13 +10,13 @@ import axios from 'axios';
   axios.defaults.baseURL = '/web';
 
 // 通过 ref 创建七个风险等级的变量
-const highRisk = ref(15);
-const mediumRisk = ref(25);
-const lowRisk = ref(20);
-const veryHighRisk = ref(2);
-const veryLowRisk = ref(3);
-const criticalRisk = ref(10);
-const negligibleRisk = ref(1);
+const highRisk = ref(0);
+const mediumRisk = ref(0);
+const lowRisk = ref(0);
+const veryHighRisk = ref(0);
+const veryLowRisk = ref(0);
+const criticalRisk = ref(0);
+const negligibleRisk = ref(0);
 
 
 // 控制总体风险等级的显示
@@ -74,6 +74,17 @@ const nextStep = async () => {
     if (response.data.isOk) {
       // 显示成功消息
       ElMessage.success('RSK保存成功');
+      //保存各类风险数据
+      const riskData = {
+        highRisk: highRisk.value,
+        mediumRisk: mediumRisk.value,
+        lowRisk: lowRisk.value,
+        veryHighRisk: veryHighRisk.value,
+        veryLowRisk: veryLowRisk.value,
+        criticalRisk: criticalRisk.value,
+        negligibleRisk: negligibleRisk.value,
+      };
+      localStorage.setItem('riskData', JSON.stringify(riskData));
       
       // 请求成功后跳转到评估结果页面
       router.push({ path: '/Standards' });
@@ -178,7 +189,7 @@ onMounted(async() => {
       // 从返回的项目数据中提取 file_path
       const filePath = project.filePath;
       // 如果 filePath 存在，并且包含指定的前缀，则替换掉前缀
-      const prefix = "E:\\1\\1\\前端\\webvue\\webvue\\public";
+      const prefix = "E:\\qianduanzuixin\\ProductConsrtuct_frontend\\public";
       if (filePath && filePath.startsWith(prefix)) {
         docxSrc.value = filePath.replace(prefix, '');  // 去掉指定的前缀
       }
@@ -186,6 +197,19 @@ onMounted(async() => {
       docxSrc.value = String(docxSrc.value);
       //计算SDC
       SDC.value=Number(project.ae)*Number(project.personnelCosts)+2;
+      //查看是否已有数据
+      const savedRiskData = localStorage.getItem('riskData');
+      if (savedRiskData) {
+        const parsedData = JSON.parse(savedRiskData);
+        // 如果 localStorage 中有数据，使用保存的数据
+        highRisk.value = parsedData.highRisk;
+        mediumRisk.value = parsedData.mediumRisk;
+        lowRisk.value = parsedData.lowRisk;
+        veryHighRisk.value = parsedData.veryHighRisk;
+        veryLowRisk.value = parsedData.veryLowRisk;
+        criticalRisk.value = parsedData.criticalRisk;
+        negligibleRisk.value = parsedData.negligibleRisk;
+      }
     } else {
       ElMessage.error('获取项目数据失败');
     }

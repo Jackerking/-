@@ -1,4 +1,5 @@
 <template>
+  <Tabs></Tabs>
     <div class="cost-standard-page">
       <!-- 顶部搜索区域 -->
       <el-container>
@@ -256,6 +257,7 @@
   import { ElInput, ElButton, ElRow, ElCol, ElCard, ElForm, ElFormItem, ElSelect, ElOption, ElDialog } from 'element-plus';
   import { ElMessageBox, ElMessage } from 'element-plus';
   import axios from 'axios';
+  import Tabs from '@/components/tabs/resourcetabs.vue';
   
   // 造价标准数据类型
   interface CostStandard {

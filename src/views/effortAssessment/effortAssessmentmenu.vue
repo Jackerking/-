@@ -1,36 +1,21 @@
 <template>
   <Tabs></Tabs>
   <div>
-      <!-- 造价标准选择 -->
-      <div class="standard-container">
-          <label for="standard-select">造价标准:</label>
-          <el-select
-              v-model="selectedStdId"
-              placeholder="请选择造价标准"
-              class="standard-select"
-              @change="handleStdIdChange"
-              clearable
-          >
-              <el-option
-              v-for="std in standardOptions"
-              :key="std.value"
-              :label="std.label"
-              :value="std.value"
-              />
-          </el-select>
-          <!-- 新标准保存按钮 -->
-          <el-button type="primary" @click="openNewStandardDialog">保存造价标准</el-button>
-      </div>
+    <!-- 造价标准选择 -->
+    <div class="standard-container">
+      <label for="standard-select">造价标准:</label>
+      <el-select v-model="selectedStdId" placeholder="请选择造价标准" class="standard-select" @change="handleStdIdChange"
+        clearable>
+        <el-option v-for="std in standardOptions" :key="std.value" :label="std.label" :value="std.value" />
+      </el-select>
+      <!-- 新标准保存按钮 -->
+      <el-button type="primary" @click="openNewStandardDialog">保存造价标准</el-button>
+    </div>
 
     <div v-for="(factor, index) in factors" :key="index" class="factor-container">
       <label :for="factor.name">{{ factor.label }}:</label>
-      <el-select
-        v-model="factor.selectedValue"
-        :placeholder="`请选择${factor.label}`"
-        @change="handleSelectionChange(index)"
-        class="factor-select"
-        clearable
-      >
+      <el-select v-model="factor.selectedValue" :placeholder="`请选择${factor.label}`" @change="handleSelectionChange(index)"
+        class="factor-select" clearable>
         <el-option v-for="option in factor.options" :key="option.value" :label="option.label" :value="option.value" />
       </el-select>
       <!-- 展示数字 -->
@@ -48,24 +33,11 @@
         <el-form>
           <div v-for="(option, optionIndex) in factor.tempEditOption" :key="optionIndex" class="factor-form-item">
             <el-form-item :label="`选项 ${optionIndex + 1}`" class="form-item">
-              <el-input
-                v-model="factor.tempEditOption[optionIndex].label"
-                placeholder="请输入选项标签"
-              ></el-input>
-              <el-input
-                v-model.number="factor.tempEditOption[optionIndex].value"
-                placeholder="请输入选项值"
-                type="number"
-                step="0.1"
-                style="margin-top: 10px;"
-              />
+              <el-input v-model="factor.tempEditOption[optionIndex].label" placeholder="请输入选项标签"></el-input>
+              <el-input v-model.number="factor.tempEditOption[optionIndex].value" placeholder="请输入选项值" type="number"
+                step="0.1" style="margin-top: 10px;" />
             </el-form-item>
-            <el-button
-              type="danger"
-              size="mini"
-              class="delete-btn"
-              @click="confirmRemoveOption(index, optionIndex)"
-            >
+            <el-button type="danger" size="mini" class="delete-btn" @click="confirmRemoveOption(index, optionIndex)">
               删除选项
             </el-button>
           </div>
@@ -81,56 +53,55 @@
 
     <div class="pdr-container">
       <label for="pdr-input">PDR：</label>
-      <el-input
-        v-model.number="pdrValue"
-        placeholder="请输入PDR值"
-        type="number"
-        step="1"
-        min="0"
-        max="100"
-        style="width: 100px; margin-left: 0px;"
-      />
+      <el-input v-model.number="pdrValue" placeholder="请输入PDR值" type="number" step="1" min="0" max="100"
+        style="width: 100px; margin-left: 0px;" />
+
+      <label for="pdr-input" style="margin-left: 50px;">平均人力成本：</label>
+      <!-- Cascader 组件，用于选择省份和年份 -->
+      <el-cascader v-model="selectedOption" :options="cascaderOptions" placeholder="请选择省份和年份" :props="cascaderProps"
+        @change="onCascaderChange" class="custom-cascader" style="width: 200px;" />
+
+      <span class="value-display">{{ cost }}</span>
+
+
+
     </div>
 
-        <!-- 新标准的输入弹窗 -->
-      <el-dialog
-        title="保存为新的造价标准"
-        v-model="isNewStandardDialogVisible"
-        width="30%"
-      >
-        <el-form :model="newStandard" ref="newStandardForm" label-width="120px">
-          <el-form-item label="标准名称" prop="stdName" :rules="[ { required: true, message: '标准名称不能为空', trigger: 'blur' } ]">
-            <el-input v-model="newStandard.stdName" placeholder="请输入标准名称"></el-input>
-          </el-form-item>
-          
-          <el-form-item label="PDR" prop="pdr" :rules="[ { required: true, message: 'PDR不能为空', trigger: 'blur' } ]">
-            <el-input v-model.number="newStandard.pdr" type="number" placeholder="请输入PDR"></el-input>
-          </el-form-item>
+    <!-- 新标准的输入弹窗 -->
+    <el-dialog title="保存为新的造价标准" v-model="isNewStandardDialogVisible" width="30%">
+      <el-form :model="newStandard" ref="newStandardForm" label-width="120px">
+        <el-form-item label="标准名称" prop="stdName" :rules="[{ required: true, message: '标准名称不能为空', trigger: 'blur' }]">
+          <el-input v-model="newStandard.stdName" placeholder="请输入标准名称"></el-input>
+        </el-form-item>
 
-          <el-form-item label="简介" prop="intro" :rules="[ { required: true, message: '简介不能为空', trigger: 'blur' } ]">
-            <el-input v-model="newStandard.intro" placeholder="请输入简介"></el-input>
-          </el-form-item>
+        <el-form-item label="PDR" prop="pdr" :rules="[{ required: true, message: 'PDR不能为空', trigger: 'blur' }]">
+          <el-input v-model.number="newStandard.pdr" type="number" placeholder="请输入PDR"></el-input>
+        </el-form-item>
 
-          <el-form-item label="类型" prop="type" :rules="[ { required: true, message: '请选择类型', trigger: 'blur' } ]">
-            <el-select v-model="newStandard.type" placeholder="请选择类型">
-              <el-option label="自定义" value="history"></el-option>
-              <el-option label="官方" value="official"></el-option>
-            </el-select>
-          </el-form-item>
+        <el-form-item label="简介" prop="intro" :rules="[{ required: true, message: '简介不能为空', trigger: 'blur' }]">
+          <el-input v-model="newStandard.intro" placeholder="请输入简介"></el-input>
+        </el-form-item>
 
-          <el-form-item label="启用状态" prop="enable" :rules="[ { required: true, message: '请选择启用状态', trigger: 'blur' } ]">
-            <el-select v-model="newStandard.enable" placeholder="请选择启用状态">
-              <el-option label="启用" value="enabled"></el-option>
-              <el-option label="禁用" value="disabled"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
+        <el-form-item label="类型" prop="type" :rules="[{ required: true, message: '请选择类型', trigger: 'blur' }]">
+          <el-select v-model="newStandard.type" placeholder="请选择类型">
+            <el-option label="自定义" value="history"></el-option>
+            <el-option label="官方" value="official"></el-option>
+          </el-select>
+        </el-form-item>
 
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="closeNewStandardDialog">取 消</el-button>
-          <el-button type="primary" @click="saveStandardAndFactors">确 定</el-button>
-        </div>
-      </el-dialog>
+        <el-form-item label="启用状态" prop="enable" :rules="[{ required: true, message: '请选择启用状态', trigger: 'blur' }]">
+          <el-select v-model="newStandard.enable" placeholder="请选择启用状态">
+            <el-option label="启用" value="enabled"></el-option>
+            <el-option label="禁用" value="disabled"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="closeNewStandardDialog">取 消</el-button>
+        <el-button type="primary" @click="saveStandardAndFactors">确 定</el-button>
+      </div>
+    </el-dialog>
 
     <div ref="chartContainer" class="chart-container"></div>
   </div>
@@ -138,18 +109,18 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
 import { ElMessage } from 'element-plus';
 
 const factors = ref([
-  { name: 'SF', label: 'SF', selectedValue: '', options: [], tempEditOption: [] },
-  { name: 'BD', label: 'BD', selectedValue: '', options: [], tempEditOption: [] },
-  { name: 'QR', label: 'QR', selectedValue: '', options: [], tempEditOption: [] },
-  { name: 'AT', label: 'AT', selectedValue: '', options: [], tempEditOption: [] },
-  { name: 'SL', label: 'SL', selectedValue: '', options: [], tempEditOption: [] },
-  { name: 'DT', label: 'DT', selectedValue: '', options: [], tempEditOption: [] }
+  { name: 'SF', label: '规模调整', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'BD', label: '业务领域', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'QR', label: '质量特性', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'AT', label: '应用类型', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'SL', label: '开发语言', selectedValue: '', options: [], tempEditOption: [] },
+  { name: 'DT', label: '团队背景', selectedValue: '', options: [], tempEditOption: [] }
 ]);
 
 const editDialogVisible = ref(factors.value.map(() => false));
@@ -166,6 +137,59 @@ const newStandard = ref({
   type: 'history', // 默认类型为 'history'
   enable: 'enabled' // 默认启用状态为 'enabled'
 });
+
+
+const selectedOption = ref('');
+
+const provinces = ref([]);
+const years = ref([]); // 用来存储年份数据
+const cost = ref<number | null>(null);  // 初始化 cost 为 null
+
+// Cascader 组件的 props 配置
+const cascaderProps = {
+  value: 'value',
+  label: 'label',
+  children: 'children'
+};
+
+const loadProvinces = async () => {
+  try {
+    const response = await axios.get('http://localhost:9000/basicRate/getProvincesWithYears');
+    console.log(response.data);  // 查看返回的数据结构
+    provinces.value = response.data; // 假设接口返回数据格式是 { name: '省份', years: [年份数组] }
+    years.value = provinces.value[0].years || []; // 默认加载第一个省份的年份
+  } catch (error) {
+    console.error('Error loading provinces:', error);
+  }
+};
+
+const cascaderOptions = computed(() => {
+  return provinces.value.map(province => ({
+    value: province.name,
+    label: province.name,
+    children: province.years.map(year => ({
+      value: year,
+      label: year.toString()
+    }))
+  }));
+});
+
+// 当用户选择了省份和年份
+const onCascaderChange = async (value: (string | number)[]) => {
+  if (value.length === 2) {
+    const [province, year] = value;
+    console.log(`选中的值: ${province} / ${year}`);
+    try {
+      const response = await axios.get(`http://localhost:9000/basicRate/getCost`, {
+        params: { province, year }
+      });
+      cost.value = response.data; // 更新成本数据
+    } catch (error) {
+      console.error('Error fetching cost data:', error);
+      cost.value = null;
+    }
+  }
+};
 
 
 // 打开弹窗
@@ -207,21 +231,21 @@ const fetchFactorOptions = async (stdId: string, factorType: string) => {
 
 //拉取造价标准列表（显示在顶部下拉框中）
 const fetchStandardOptions = async () => {
-      try {
-          const response = await axios.get('http://localhost:9000/CostStandard/list');
-          // 假设返回数据格式为 { standards: [{ stdId: '123', name: '标准1' }, ...] }
-          standardOptions.value = response.data.CostStandards.map(standard => ({
-          label: standard.stdName,
-          value: standard.stdId
-          }));
-          if (standardOptions.value.length > 0) {
-          selectedStdId.value = standardOptions.value[0].value; // 默认选中第一个
-          handleStdIdChange(selectedStdId.value); // 加载对应因子
-          }
-      } catch (error) {
-          console.error('获取造价标准失败:', error);
-      }
-  };
+  try {
+    const response = await axios.get('http://localhost:9000/CostStandard/list');
+    // 假设返回数据格式为 { standards: [{ stdId: '123', name: '标准1' }, ...] }
+    standardOptions.value = response.data.CostStandards.map(standard => ({
+      label: standard.stdName,
+      value: standard.stdId
+    }));
+    if (standardOptions.value.length > 0) {
+      selectedStdId.value = standardOptions.value[0].value; // 默认选中第一个
+      handleStdIdChange(selectedStdId.value); // 加载对应因子
+    }
+  } catch (error) {
+    console.error('获取造价标准失败:', error);
+  }
+};
 
 
 const showEditDialog = (index: number) => {
@@ -236,31 +260,31 @@ const showEditDialog = (index: number) => {
 
 const saveOptions = (index: number) => {
   const factor = factors.value[index];
-  
+
   // 验证：检查是否有未填写的选项
   const hasEmptyFields = factor.tempEditOption.some(option => {
-      return option.label.trim() === '' || option.value === null || option.value === '';
+    return option.label.trim() === '' || option.value === null || option.value === '';
   });
 
   if (hasEmptyFields) {
-      ElMessage({
+    ElMessage({
       type: 'warning',
       message: '选项内容和值不能为空，请检查后再保存！',
-      });
-      return; // 阻止保存
+    });
+    return; // 阻止保存
   }
 
   // 如果所有选项填写完整，则保存
   factor.options = factor.tempEditOption.map(option => ({
-      label: option.label,
-      value: option.value
+    label: option.label,
+    value: option.value
   }));
 
   ElMessage({
-      type: 'success',
-      message: '修改成功！',
-      });
-  
+    type: 'success',
+    message: '修改成功！',
+  });
+
   factor.selectedValue = ''; // 清空已选值
   editDialogVisible.value[index] = false; // 关闭对话框
   updateChart(); // 更新图表
@@ -319,122 +343,123 @@ const removeOption = (index: number, optionIndex: number) => {
 };
 
 // 确认并删除选项
-  const confirmRemoveOption = (index: number, optionIndex: number) => {
-    ElMessageBox.confirm(
-        '确定要删除这个选项吗？',
-        '提示',
-        {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
-        type: 'warning',
-        }
-      )
-      .then(() => {
-        removeOption(index, optionIndex); // 删除选项
-        ElMessage({ type: 'success', message: '选项已删除' });
-      })
-  };
+const confirmRemoveOption = (index: number, optionIndex: number) => {
+  ElMessageBox.confirm(
+    '确定要删除这个选项吗？',
+    '提示',
+    {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      removeOption(index, optionIndex); // 删除选项
+      ElMessage({ type: 'success', message: '选项已删除' });
+    })
+};
 
 
-  const handleStdIdChange = async (newStdId) => {
-      if (!newStdId) return;
-      // 清空所有因子的选项内容和选中值
-      factors.value.forEach(factor => {
-        factor.selectedValue = ''; // 清空选中的值
-        factor.options = []; // 清空选项
-        factor.tempEditOption = []; // 清空编辑临时选项
-      });
-      
-      // 当造价标准改变时，重新加载所有因子的选项
-      factorTypes.forEach(factorType => {
-          fetchFactorOptions(newStdId, factorType);
-      });
+const handleStdIdChange = async (newStdId) => {
+  if (!newStdId) return;
+  // 清空所有因子的选项内容和选中值
+  factors.value.forEach(factor => {
+    factor.selectedValue = ''; // 清空选中的值
+    factor.options = []; // 清空选项
+    factor.tempEditOption = []; // 清空编辑临时选项
+  });
 
-      // 获取选中标准的 PDR 值
-      try {
-        const response = await axios.get(`http://localhost:9000/CostStandard/get`, { params: { stdId: newStdId } });
-        const standardData = response.data.CostStandard; // 假设返回数据中包含 CostStandard
-        pdrValue.value = standardData.pdr || 0; // 更新 PDR 值
-      } catch (error) {
-        console.error("获取PDR失败:", error);
-      }
-  };
+  // 当造价标准改变时，重新加载所有因子的选项
+  factorTypes.forEach(factorType => {
+    fetchFactorOptions(newStdId, factorType);
+  });
 
-  // 保存标准和因子选项
-  const saveStandardAndFactors = async () => {
-    try {
+  // 获取选中标准的 PDR 值
+  try {
+    const response = await axios.get(`http://localhost:9000/CostStandard/get`, { params: { stdId: newStdId } });
+    const standardData = response.data.CostStandard; // 假设返回数据中包含 CostStandard
+    pdrValue.value = standardData.pdr || 0; // 更新 PDR 值
+  } catch (error) {
+    console.error("获取PDR失败:", error);
+  }
+};
 
-      // 1. 验证标准名称和简介不能为空
-      if (!newStandard.value.stdName || !newStandard.value.intro) {
-        ElMessage({
-          type: 'error',
-          message: '标准名称和简介不能为空！',
-        });
-        return;  // 阻止保存操作
-      }
+// 保存标准和因子选项
+const saveStandardAndFactors = async () => {
+  try {
 
-      // 1. 保存标准
-      const response = await axios.post('http://localhost:9000/CostStandard/addForStdId', newStandard.value);
-      const newStdId = response.data.stdId; // 假设返回的数据中有 stdId
-
-
-      if (!newStdId) {
-        throw new Error("标准保存失败，未返回 stdId");
-      }
-
-      // 2. 保存因子选项
-      const factorRequests = factors.value.map(factor => {
-        const factorData = factor.tempEditOption.map(option => ({
-          stdId: newStdId, // 使用返回的 stdId
-          factor_type: factor.name,
-          factor_name: option.label,
-          factor_value: option.value,
-        }));
-        console.log("factorData:"+factorData.values);
-
-        // 发送因子选项保存请求
-        return axios.post('http://localhost:9000/Factor/addFactors', factorData);
-      });
-
-      // 等待所有因子保存完成
-      await Promise.all(factorRequests);
-
-      // 显示成功消息
-      ElMessage({
-        type: 'success',
-        message: '标准和因子选项已保存成功！',
-      });
-
-      fetchStandardOptions(); // 刷新标准选项
-
-      // 清空当前选择，或者可以执行后续操作
-      closeNewStandardDialog(); // 关闭弹窗
-
-    } catch (error) {
-      console.error("保存失败:", error);
+    // 1. 验证标准名称和简介不能为空
+    if (!newStandard.value.stdName || !newStandard.value.intro) {
       ElMessage({
         type: 'error',
-        message: '保存失败，请重试！',
+        message: '标准名称和简介不能为空！',
       });
+      return;  // 阻止保存操作
     }
-  };
 
-  onMounted(() => {
-    fetchStandardOptions(); // 加载造价标准
-    factorTypes.forEach(factorType => {
-      fetchFactorOptions(selectedStdId.value, factorType);
+    // 1. 保存标准
+    const response = await axios.post('http://localhost:9000/CostStandard/addForStdId', newStandard.value);
+    const newStdId = response.data.stdId; // 假设返回的数据中有 stdId
+
+
+    if (!newStdId) {
+      throw new Error("标准保存失败，未返回 stdId");
+    }
+
+    // 2. 保存因子选项
+    const factorRequests = factors.value.map(factor => {
+      const factorData = factor.tempEditOption.map(option => ({
+        stdId: newStdId, // 使用返回的 stdId
+        factor_type: factor.name,
+        factor_name: option.label,
+        factor_value: option.value,
+      }));
+      console.log("factorData:" + factorData.values);
+
+      // 发送因子选项保存请求
+      return axios.post('http://localhost:9000/Factor/addFactors', factorData);
     });
-    initChart();
 
+    // 等待所有因子保存完成
+    await Promise.all(factorRequests);
+
+    // 显示成功消息
+    ElMessage({
+      type: 'success',
+      message: '标准和因子选项已保存成功！',
+    });
+
+    fetchStandardOptions(); // 刷新标准选项
+
+    // 清空当前选择，或者可以执行后续操作
+    closeNewStandardDialog(); // 关闭弹窗
+
+  } catch (error) {
+    console.error("保存失败:", error);
+    ElMessage({
+      type: 'error',
+      message: '保存失败，请重试！',
+    });
+  }
+};
+
+onMounted(() => {
+  fetchStandardOptions(); // 加载造价标准
+  loadProvinces();  // 加载省份和年份数据
+  factorTypes.forEach(factorType => {
+    fetchFactorOptions(selectedStdId.value, factorType);
   });
+  initChart();
+
+});
 </script>
 
 
 <style lang="scss" scoped>
-
 .edit-icon:hover {
   color: #89add4;
 }
+
 .factor-container {
   margin-bottom: 15px;
   display: flex;
@@ -444,9 +469,9 @@ const removeOption = (index: number, optionIndex: number) => {
   color: #333;
 
   label {
-    margin-right: 10px;
-    margin-left: 30;
-    width: 100px;
+    margin-right: 20px;
+    margin-left: 45px;
+    width: 150px;
     text-align: right;
   }
 
@@ -461,18 +486,30 @@ const removeOption = (index: number, optionIndex: number) => {
 
 
 .value-display {
-  display: inline-block; /* 让其成为块级元素，以便添加内边距等 */
-  margin-left: 20px; /* 调整左侧间距 */
-  padding: 5px 10px; /* 内边距使背景更美观 */
-  background-color: #f4f3f3; /* 浅灰色背景 */
-  color: #333; /* 字体颜色 */
-  border-radius: 4px; /* 圆角 */
-  font-weight: bold; /* 字体加粗 */
-  min-width: 40px; /* 确保有最小宽度，避免值太小 */
-  height: 25px; /* 固定高度 */
-  line-height: 25px; /* 使文本垂直居中 */
-  text-align: center; /* 使文本居中 */
-  word-wrap: break-word; /* 防止长数字溢出 */
+  display: inline-block;
+  /* 让其成为块级元素，以便添加内边距等 */
+  margin-left: 20px;
+  /* 调整左侧间距 */
+  padding: 5px 10px;
+  /* 内边距使背景更美观 */
+  background-color: #f6f3f3;
+  /* 浅灰色背景 */
+  color: #333;
+  /* 字体颜色 */
+  border-radius: 4px;
+  /* 圆角 */
+  font-weight: bold;
+  /* 字体加粗 */
+  min-width: 80px;
+  /* 确保有最小宽度，避免值太小 */
+  height: 20px;
+  /* 固定高度 */
+  line-height: 25px;
+  /* 使文本垂直居中 */
+  text-align: center;
+  /* 使文本居中 */
+  word-wrap: break-word;
+  /* 防止长数字溢出 */
 }
 
 .chart-container {
@@ -496,81 +533,91 @@ const removeOption = (index: number, optionIndex: number) => {
     font-size: 12px;
     padding: 3px 8px;
     height: 28px;
-    align-self: flex-start; /* 删除按钮顶部对齐 */
+    align-self: flex-start;
+    /* 删除按钮顶部对齐 */
   }
 }
 
 /* 弹窗底部按钮调整 */
 .dialog-footer {
-display: flex;
-align-items: center;
-justify-content: space-between; /* 将新增按钮和其他按钮分开 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 将新增按钮和其他按钮分开 */
 
-.spacer {
-  flex: 1; /* 用来分隔新增选项按钮和取消/确定按钮 */
-}
+  .spacer {
+    flex: 1;
+    /* 用来分隔新增选项按钮和取消/确定按钮 */
+  }
 
-.el-button {
-  margin-left: 0px;
-  height: 30px; /* 设置统一按钮高度 */
-}
+  .el-button {
+    margin-left: 0px;
+    height: 30px;
+    /* 设置统一按钮高度 */
+  }
 }
 
 /* 将新增按钮置于左侧 */
 .dialog-footer .el-button:first-child {
-margin-left: 20;
+  margin-left: 20;
 }
 
 /* 使用 ::v-deep 来确保样式应用到 Element Plus 的组件 */
 ::v-deep .el-dialog__body {
-max-height: 350px;
-overflow-y: auto;
+  max-height: 350px;
+  overflow-y: auto;
 }
 
 .standard-container {
-display: flex;
-align-items: center;
-justify-content: flex-start;
-margin-bottom: 30px;
-padding-left: 20px; /* 增加左侧的间距 */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 20px;
+  /* 增加左侧的间距 */
 
-label {
-  margin-right: 10px;
-  margin-left: 50;
-  font-weight: bold;
-  color: #333;
-}
+  label {
+    margin-right: 20px;
+    margin-left: 20px;
+    font-weight: bold;
+    color: #333;
+  }
 
-.standard-select {
-  width: 300px;
-  min-width: 300px;
-  max-width: 300px;
-}
+  .standard-select {
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+  }
 
   .el-button {
-  margin-left: 50px;
-  height: 30px; /* 设置统一按钮高度 */
-}
+    margin-left: 30px;
+    height: 30px;
+    /* 设置统一按钮高度 */
+    background-color: rgb(0, 174, 0) !important;
+    /* 设置按钮背景颜色为绿色 */
+    color: white !important;
+    /* 设置按钮文字颜色为白色 */
+  }
+
 }
 
 .pdr-container {
-display: flex;
-align-items: center;
-justify-content: flex-start;
-width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 20px;
 }
+
 .pdr-container label {
-margin-left: 60px;
-color: #333;
+  margin-left: 130px;
+  color: #333;
 }
 
 .pdr-container .el-input {
-width: 20px;
-margin-left: 0px;
+  width: 15px;
+  margin-left: 20px;
 }
-
-
-
-
 </style>
 

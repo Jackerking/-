@@ -135,48 +135,6 @@ let menuList= reactive([
         ]
 },
 {
-    path:"/fieldmenu",
-    name:"field",
-    component:"/system/field/fieldmenu",
-    meta:{
-            title:"行业动态",
-            icon:"Menu",
-            roles:["sys:field"]
-        },
-        children:[
-        {
-            path:"/fielddetail",
-    name:"fielddetail",
-    component:"/system/field/fielddetail",
-    meta:{
-            title:"行业详情",
-            icon:"Menu",
-            roles:["sys:fielddetail"]
-        },
-        },
-        {
-            path:"/meetcreat",
-    name:"meetcreat",
-    component:"/system/meet/meetcreat",
-    meta:{
-            title:"会议创建",
-            icon:"Menu",
-            roles:["sys:meetcreat"]
-        },
-        },
-        {
-            path:"/meetedit",
-    name:"meetedit",
-    component:"/system/meet/meetedit",
-    meta:{
-            title:"会议编辑", 
-            icon:"Menu",
-            roles:["sys:meetedit"]
-        },
-        }
-        ]
-},
-{
     path:"/costStandard",
     name:"costStandard",
     component:"/system/resource/costStandard",
