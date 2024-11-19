@@ -182,10 +182,7 @@ const router = useRouter();
      loadProjects(userId);
   });
   
-  // 上传文件操作
-  const uploadFile = (projectName) => {
-    router.push('/fieldmenu');  // 使用路径进行跳转
-  };
+
   
   
   // 删除项目操作
@@ -313,6 +310,7 @@ const router = useRouter();
   projectTime: [{ required: true, message: "请选择开始时间", trigger: "change" }],
   };
   
+  
   // 搜索项目
   const searchProjects = async () => {
     try {
@@ -366,11 +364,11 @@ const router = useRouter();
           const response = await axios.post('/project/create', newProject.value);
           if (response.data.isOk) {
             ElMessage.success('创建项目成功'),
-           // 解析并保存返回的 savedProject
-           savedProject.value = response.data.project;
-           // 将 savedProject 保存在 LocalStorage 中
-          localStorage.setItem('savedProject', JSON.stringify(savedProject.value));
-           console.log(savedProject.value)
+          //  // 解析并保存返回的 savedProject
+          //  savedProject.value = response.data.project;
+          //  // 将 savedProject 保存在 LocalStorage 中
+          // localStorage.setItem('savedProject', JSON.stringify(savedProject.value));
+          //  console.log(savedProject.value)
            resetForm();
            // 清空本地存储中的 riskData
           localStorage.removeItem('riskData'); // 清空 riskData
@@ -387,7 +385,29 @@ const router = useRouter();
       }
     })
   };
-  
+    // 上传文件操作
+    const uploadFile =async (projectName) => {
+      console.log(projectName)
+      try {
+    // 调用后端接口，传递项目名称
+    const response = await axios.post('/project/find', { projectName });
+
+    // 判断返回结果
+    if (response.data.isOk) {
+      console.log('项目查找成功', response.data.project);
+      
+      // 保存返回的项目数据到 LocalStorage
+      localStorage.setItem('savedProject', JSON.stringify(response.data.project));
+
+      // 跳转到其他页面，例如 '/fieldmenu'
+      router.push('/fieldmenu');
+    } else {
+      console.error('项目查找失败');
+    }
+  } catch (error) {
+    console.error('请求失败', error);
+  }
+  };
   </script>
   
   <style scoped>

@@ -1,7 +1,7 @@
 <template>
     <div class="header-container">
         <div class="header-title">
-            <span>项目评估</span>
+            <span>资源数据</span>
         </div>
         <el-tabs
             v-model="activeTab"
@@ -11,16 +11,9 @@
             @tab-click="clickBtn"
         >
             <!-- 固定选项卡内容 -->
-            <el-tab-pane label="功能点评估" name="FunctionPointEvaluation"></el-tab-pane>
-            <el-tab-pane label="工作量评估" name="effortAssessmentmenu"></el-tab-pane>
-            <el-tab-pane label="风险评估" name="riskAssessment"></el-tab-pane>
-            <el-tab-pane label="评估结果" name="standards"></el-tab-pane>
-            <el-tab-pane label="功能点审核" name="review"></el-tab-pane>
+            <el-tab-pane label="造价标准" name="costStandard"></el-tab-pane>
+            <el-tab-pane label="行业数据" name="industryData"></el-tab-pane>
         </el-tabs>
-        <div class="header-buttons">
-            <el-button class="export-button">导出项目</el-button>
-            <el-button class="export-button">导出评估结果</el-button>
-        </div>
     </div>
 </template>
 
@@ -31,7 +24,7 @@ import { TabsPaneContext } from 'element-plus';
 
 const router = useRouter();
 const route = useRoute();
-const activeTab = ref(route.path || '/FunctionPointEvaluation'); // 根据路由设置初始选项卡
+const activeTab = ref(route.path || '/costStandard'); // 根据路由设置初始选项卡
 
 const clickBtn = (pane: TabsPaneContext) => {
     const { props } = pane;
@@ -88,10 +81,11 @@ watch(
     .header-title {
         display: flex;
         align-items: center;
+
         font-size: 18px;
         font-weight: bold;
         color: #333;
-        margin-right: 150px; /* 添加标题与选项卡的间距 */
+        margin-right: 20px; /* 添加标题与选项卡的间距 */
     }
 
     .demo-tabs {

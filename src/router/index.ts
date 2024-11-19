@@ -107,6 +107,15 @@ const routes: Array<RouteRecordRaw> = [
   }
 },
 {
+  path:"/industryData2",
+  name:"industryData2",
+  component: () => import("../views/resource/industryData2.vue"),
+      meta:{
+          title:"行业数据", 
+          icon:"Menu",
+  }
+},
+{
   path:"/fielddetail",
   name:"fielddetail",
   component: () => import("../views/field/fileddetail.vue"),
