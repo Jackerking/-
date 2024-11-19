@@ -7,6 +7,7 @@
             v-model="activeTab"
             type="card"
             class="demo-tabs"
+            tab-position="bottom"
             @tab-click="clickBtn"
         >
             <!-- 固定选项卡内容 -->
@@ -55,6 +56,7 @@ watch(
     background-color: #f5f7fa;
     border-bottom: 1px solid #ebeef5;
 
+
     .header-title {
         display: flex;
         align-items: center;
@@ -76,13 +78,46 @@ watch(
         color: #909399;
     }
 
+    .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f5f7fa;
+    border-bottom: 1px solid #ebeef5;
+    margin-bottom: 10;
+
+    .header-title {
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-right: 150px; /* 添加标题与选项卡的间距 */
+    }
+
     .demo-tabs {
         flex: 1;
         margin-right: 20px;
-        
+
+
         .el-tabs__header {
             background-color: #f0f2f5; /* 选项卡区域背景为灰色 */
             border-bottom: none;
+        }
+        .el-tabs__header {
+            background-color: #f0f2f5;
+            border-bottom: 1px solid #dcdfe6;
+            padding: 0 0 0 0; /* 设置上下左右的 padding 为 0，避免多余的内边距 */
+            height: 10px; /* 根据需要调整高度，确保与 el-tabs__nav-wrap 一致 */
+            box-sizing: border-box; /* 确保 border 和 padding 被包含在高度中 */
+        }
+
+        .el-tabs__nav-wrap.is-top {
+            background-color: #fff;
+            border-bottom: 1px solid #dcdfe6;
+            padding: 0 0 0 0; /* 移除多余的内边距 */
+            height: 40px; /* 设置相同的高度 */
+            box-sizing: border-box; /* 确保 border 和 padding 被包含在高度中 */
         }
 
         .el-tabs__item {
@@ -106,6 +141,18 @@ watch(
         }
     }
 
+    .header-buttons {
+        display: flex;
+
+        .export-button {
+            font-size: 14px;
+            font-weight: bold;
+            color: #606266;
+            background-color: #f0f2f5;
+            border: 1px solid #dcdfe6;
+        }
+    }
+}
     .header-buttons {
         display: flex;
         gap: 10px;

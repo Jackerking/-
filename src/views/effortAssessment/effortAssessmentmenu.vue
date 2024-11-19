@@ -90,6 +90,24 @@
         max="100"
         style="width: 100px; margin-left: 0px;"
       />
+
+      <label for="pdr-input" style="margin-left: 15px;">平均人力成本：</label>
+      <!-- Cascader 组件，用于选择省份和年份 -->
+      <el-cascader
+        v-model="selectedOption"
+        :options="cascaderOptions"
+        placeholder="请选择省份和年份"
+        :props="cascaderProps"
+        @change="onCascaderChange"
+        class="custom-cascader" 
+        style="width: 200px;" 
+      />
+
+      <span class="value-display">{{ }}</span>
+      
+    
+
+
     </div>
 
         <!-- 新标准的输入弹窗 -->
@@ -138,7 +156,7 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted ,computed} from 'vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
 import { ElMessage } from 'element-plus';
@@ -166,6 +184,52 @@ const newStandard = ref({
   type: 'history', // 默认类型为 'history'
   enable: 'enabled' // 默认启用状态为 'enabled'
 });
+
+
+const selectedOption = ref('');
+
+// 固定数据
+const provinces = ref([
+  { name: "北京" },
+  { name: "上海" },
+  { name: "广东" },
+  { name: "江苏" },
+  { name: "浙江" },
+  { name: "浙江" },
+  { name: "浙江" },
+  { name: "浙江" }
+]);
+
+const years = ref([2020, 2021, 2022, 2023, 2024]);
+
+// 使用 computed 来确保 cascaderOptions 在 provinces 或 years 变化时更新
+const cascaderOptions = computed(() => {
+  return provinces.value.map(province => ({
+    value: province.name,
+    label: province.name,
+    children: years.value.map(year => ({
+      value: year,
+      label: year.toString()
+    }))
+  }));
+});
+
+// Cascader 组件的 props 配置
+const cascaderProps = {
+  value: 'value',
+  label: 'label',
+  children: 'children'
+};
+
+// 监听 Cascader 选择变化
+const onCascaderChange = (value) => {
+  // 格式化显示选择结果，例如： "北京 / 2020"
+  if (value && value.length === 2) {
+    console.log(`选中的值: ${value[0]} / ${value[1]}`);
+  }
+};
+
+
 
 
 // 打开弹窗
@@ -469,7 +533,7 @@ const removeOption = (index: number, optionIndex: number) => {
   border-radius: 4px; /* 圆角 */
   font-weight: bold; /* 字体加粗 */
   min-width: 40px; /* 确保有最小宽度，避免值太小 */
-  height: 25px; /* 固定高度 */
+  height: 20px; /* 固定高度 */
   line-height: 25px; /* 使文本垂直居中 */
   text-align: center; /* 使文本居中 */
   word-wrap: break-word; /* 防止长数字溢出 */
@@ -531,7 +595,8 @@ overflow-y: auto;
 display: flex;
 align-items: center;
 justify-content: flex-start;
-margin-bottom: 30px;
+margin-top: 10;
+margin-bottom: 20px;
 padding-left: 20px; /* 增加左侧的间距 */
 
 label {
@@ -558,6 +623,7 @@ display: flex;
 align-items: center;
 justify-content: flex-start;
 width: 50%;
+margin-top: 30px;
 }
 .pdr-container label {
 margin-left: 60px;
@@ -565,12 +631,9 @@ color: #333;
 }
 
 .pdr-container .el-input {
-width: 20px;
+width: 15px;
 margin-left: 0px;
 }
-
-
-
 
 </style>
 
