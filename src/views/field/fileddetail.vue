@@ -19,6 +19,7 @@
       <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
         <button style="margin-right: 10px;" @click="returnfile" class="blue-button">重新上传</button>
       <button @click="addTableRow" class="blue-button"> + 新增功能点</button>
+      <button @click="tiaozhuan" class="blue-button"> 跳转</button>
 </div>
       <table>
         <thead>
@@ -97,6 +98,9 @@ function addTableRow() {
 function returnfile() {
    router.back();
 }
+const tiaozhuan=()=>{
+  router.push('/FunctionPointEvaluation');
+}
 // 返回上一页面
 const goBack = () => {
       router.push('/fieldmenu');  // 使用路径进行跳转
@@ -107,7 +111,7 @@ async function getFileUrl(fileId) {
     const response = await axios.get(`/api/view/download/url/${fileId}`);
     if (response.data) {
       const fullFilePath = response.data;
-      const prefix = "E:\\qianduanzuixin\\ProductConsrtuct_frontend\\public";
+      const prefix = "C:\\Users\\93229\\Desktop\\aaaaa\\ProductConsrtuct_frontend\\public";
       if (fullFilePath && fullFilePath.startsWith(prefix)) {
         const relativePath = fullFilePath.replace(prefix, '');
         const extension = relativePath.split('.').pop().toLowerCase();

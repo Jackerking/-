@@ -189,7 +189,7 @@ onMounted(async() => {
       // 从返回的项目数据中提取 file_path
       const filePath = project.filePath;
       // 如果 filePath 存在，并且包含指定的前缀，则替换掉前缀
-      const prefix = "E:\\qianduanzuixin\\ProductConsrtuct_frontend\\public";
+      const prefix = "C:\\Users\\93229\\Desktop\\aaaaa\\ProductConsrtuct_frontend\\public";
       if (filePath && filePath.startsWith(prefix)) {
         docxSrc.value = filePath.replace(prefix, '');  // 去掉指定的前缀
       }

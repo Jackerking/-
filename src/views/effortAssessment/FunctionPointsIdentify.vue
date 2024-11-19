@@ -210,7 +210,7 @@ const tableData = ref([
 //数据加载
 const loadMenus = async () => {
   try {
-    const res = await axios.get(`http://localhost:8080/fc/list`);
+    const res = await axios.get(`http://localhost:9000/fc/list`);
     if (res.data.isok) {
       ElMessage.success("加载数据成功");
       tableData.value = res.data.fc;
@@ -289,7 +289,7 @@ const addFC = async () => {
     fc.append('totalUnadjusted', ufcSource.value);
     fc.append('totalAdjusted', usSource.value);
 
-    const res = await axios.post('http://localhost:8080/fc/add', fc);
+    const res = await axios.post('http://localhost:9000/fc/add', fc);
     if (res.data.isok) {
       ElMessage.success("添加成功");
       location.reload();
@@ -342,7 +342,7 @@ const editFC = async () => {
     fc.append('scaleChangeFactor1', scaleChangeFactor.value); // scaleChangeFactor 是一个数值
     fc.append('totalUnadjusted', ufcSource.value);
     fc.append('totalAdjusted', usSource.value);
-    const res = await axios.post('http://localhost:8080/fc/update', fc);
+    const res = await axios.post('http://localhost:9000/fc/update', fc);
     if (res.data.isok) {
       ElMessage.success("修改成功");
       location.reload();
@@ -369,7 +369,7 @@ const delFC = async (id: any) => {
     fc.append('gp', JSON.stringify(gp.value)); // gp 是前端表单中的 GscPt 对象
     fc.append('scaleChangeFactor1', scaleChangeFactor.value); // scaleChangeFactor 是一个数值
 
-    const res = await axios.post('http://localhost:8080/fc/del', fc);
+    const res = await axios.post('http://localhost:9000/fc/del', fc);
     if (res.data.isok) {
       ElMessage.success("删除成功");
       ufcSource.value = res.data.totalUnadjusted;
@@ -395,7 +395,7 @@ const selectedCategory = ref(); // 选中的功能点类型
 
 const searchFC = async () => {
   try {
-    const res = await axios.get(`http://localhost:8080/fc/search`, {
+    const res = await axios.get(`http://localhost:9000/fc/search`, {
       params: {
         keyword: searchKeyword.value
       }
@@ -421,7 +421,7 @@ const resetList = async () => {
 const filterByCategory = async () => {
   if (selectedCategory.value) {
     try {
-      const res = await axios.get(`http://localhost:8080/fc/filter`, {
+      const res = await axios.get(`http://localhost:9000/fc/filter`, {
         params: {
           cg: selectedCategory.value
         }
