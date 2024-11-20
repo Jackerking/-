@@ -10,6 +10,7 @@
       </el-select>
       <!-- 新标准保存按钮 -->
       <el-button type="primary" @click="openNewStandardDialog">保存造价标准</el-button>
+      <el-button type="primary" @click="CalculateAndSaveAE">下一步</el-button>
     </div>
 
     <div v-for="(factor, index) in factors" :key="index" class="factor-container">
@@ -138,12 +139,16 @@ const newStandard = ref({
   enable: 'enabled' // 默认启用状态为 'enabled'
 });
 
-
+//平均人力成本下拉框
 const selectedOption = ref('');
-
 const provinces = ref([]);
 const years = ref([]); // 用来存储年份数据
 const cost = ref<number | null>(null);  // 初始化 cost 为 null
+const projectInfo = loadProjectInfo();
+
+const projectId =  36;
+
+
 
 // Cascader 组件的 props 配置
 const cascaderProps = {
@@ -442,6 +447,59 @@ const saveStandardAndFactors = async () => {
     });
   }
 };
+
+const CalculateAndSaveAE = async () => {
+  try {
+    const params = {
+      projectId: projectId,  // 项目ID
+      S: 100,  // 其他参数
+      personnelCosts: 10,
+      SF: parseFloat(factors.value.find(factor => factor.name === 'SF')?.selectedValue|| ''),
+      BD: parseFloat(factors.value.find(factor => factor.name === 'BD')?.selectedValue|| ''),
+      QR: parseFloat(factors.value.find(factor => factor.name === 'QR')?.selectedValue|| ''),
+      AT: parseFloat(factors.value.find(factor => factor.name === 'AT')?.selectedValue|| ''),
+      SL: parseFloat(factors.value.find(factor => factor.name === 'SL')?.selectedValue|| ''),
+      DT: parseFloat(factors.value.find(factor => factor.name === 'DT')?.selectedValue || ''),
+      stdId: selectedStdId.value, // 造价标准ID
+    };
+
+    console.log("params:", JSON.stringify(params, null, 2));
+
+    // 通过 URL 查询参数发送请求
+    const response = await axios.post('http://localhost:9000/Factor/updateProject', params, {
+      headers: {
+        'Content-Type': 'application/json', // 确保请求头为 JSON 格式
+      },
+    });
+
+    if (response.data.status) {
+      ElMessage({
+        type: 'success',
+        message: 'AE计算并保存成功！',
+      });
+    } else {
+      ElMessage({
+        type: 'error',
+        message: 'AE计算并保存失败，请重试！',
+      });
+    }
+  } catch (error) {
+    console.error('AE计算并保存失败:', error);
+    ElMessage({
+      type: 'error',
+      message: 'AE计算并保存失败，请重试！',
+    });
+  }
+};
+
+
+
+// 从 localStorage 加载项目数据
+function loadProjectInfo() {
+  const storedProject = localStorage.getItem('savedProject');
+  return storedProject ? JSON.parse(storedProject) : null;
+}
+
 
 onMounted(() => {
   fetchStandardOptions(); // 加载造价标准
