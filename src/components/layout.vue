@@ -4,9 +4,7 @@
         <menu-bar></menu-bar>
       </el-aside>
       <el-container>
-        <el-header class="header">
-          <Header></Header>
-        </el-header>
+
         <el-main class="main">
           <!-- 删除了 Tabs 组件 -->
           <router-view></router-view>

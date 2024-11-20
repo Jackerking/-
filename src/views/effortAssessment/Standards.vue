@@ -81,7 +81,7 @@ onMounted(async () => {
       infoCards[1].value = project.adjustedFunctionPoints || 0;   // 调整后规模
       infoCards[2].value = project.personnelCosts || 0;           // 人月单价
       infoCards[3].value = project.ae || 0; // 调整后工作量 (假设比例)
-      infoCards[4].value = (project.totalCost).toFixed(2) || 0;                // 软件开发费用
+      infoCards[4].value = (project.totalCost).toFixed(2) || 0; // 软件开发费用
       infoCards[5].value = (project.totalCost/project.adjustedFunctionPoints).toFixed(2) || 0; // 功能点单价
 
       // 动态更新表格数据

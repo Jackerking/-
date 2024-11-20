@@ -69,16 +69,6 @@ const routes: Array<RouteRecordRaw> = [
       },
 },
 {
-  path:"/meetmenu",
-  name:"meet",
-  component: () => import("../views/meet/meetmenu.vue"),
-  meta:{
-          title:"会议管理",
-          icon:"Menu",
-      },
-      
-},
-{
   path:"/FunctionPointEvaluation",
   name:"FunctionPointEvaluation",
   component: () => import("../views/effortAssessment/FunctionPointEvaluation.vue"),
@@ -148,15 +138,6 @@ const routes: Array<RouteRecordRaw> = [
   component: () => import("../views/effortAssessment/Standards.vue"),
       meta:{
           title:"用户详情", 
-          icon:"Menu",
-  }
-},
-{
-  path:"/meetingdetail",
-  name:"meetingdetail",
-  component: () => import("../views/meet/meetingdetail.vue"),
-      meta:{
-          title:"会议详情", 
           icon:"Menu",
   }
 },
