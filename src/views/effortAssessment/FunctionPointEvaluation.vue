@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 import axios from 'axios';
 import {
     ElMessage
@@ -112,6 +112,7 @@ import { Edit } from '@element-plus/icons-vue'
 
 //步骤条当前位置
 const currentStep = ref(0);
+axios.defaults.baseURL = '/web';
 
 //路由
 const router = useRouter();
@@ -148,6 +149,7 @@ const gp = ref({
 
 //规模因子调整
 const scaleChangeFactor = ref("");
+const project=ref();
 
 const inputFactor = () => {
     // let fd = new FormData();
@@ -168,8 +170,12 @@ const inputFactor = () => {
     formData.append('fp', JSON.stringify(fp.value)); // fp 是前端表单中的 Functionalpoint 对象
     formData.append('gp', JSON.stringify(gp.value)); // gp 是前端表单中的 GscPt 对象
     formData.append('scaleChangeFactor1', scaleChangeFactor.value); // scaleChangeFactor 是一个数值
-
-    axios.post('http://localhost:8080/fc/addweight', formData)
+    formData.append('filePath', project.value.filePath); 
+    formData.append('projectId', project.value.projectId);
+    localStorage.setItem('fp', JSON.stringify(fp.value));
+    localStorage.setItem('gp', JSON.stringify(gp.value));
+    localStorage.setItem('scaleChangeFactor1', JSON.stringify(scaleChangeFactor.value));
+    axios.post('http://localhost:9000/fc/addweight', formData)
         .then((res) => {
             if (res.data.isok) {
                 ElMessage.success("资讯创建成功");
@@ -177,8 +183,19 @@ const inputFactor = () => {
                 console.log(ufcSource.value);
                 
                 usSource.value = res.data.totalAdjusted;
+                const EIFCount = res.data.EIFCount;
+                const ILFCount = res.data.ILFCount;
+                const EICount = res.data.EICount;
+                const EOCount = res.data.EOCount;
+                const EQCount = res.data.EQCount;
+                localStorage.setItem('EIFCount', JSON.stringify(EIFCount));
+                localStorage.setItem('ILFCount', JSON.stringify(ILFCount));
+                localStorage.setItem('EICount', JSON.stringify(EICount));
+                localStorage.setItem('EOCount', JSON.stringify(EOCount));
+                localStorage.setItem('EQCount', JSON.stringify(EQCount));
                 localStorage.setItem('ufcSource', JSON.stringify(ufcSource.value));
                 localStorage.setItem('usSource', JSON.stringify(usSource.value));
+
                 router.push('/functionPointsIdentify');
             } else {
                 ElMessage.error("资讯创建失败");
@@ -189,13 +206,29 @@ const inputFactor = () => {
         });
 };
 
-const onSubmit = () => {
-    try {
-        inputFactor();
-    } catch (error) {
-        console.error(error);
-    }
+// 从 localStorage 加载项目数据
+function loadProjectInfo() {
+  const storedProject = localStorage.getItem('savedProject');
+  return storedProject ? JSON.parse(storedProject) : null;
 }
+
+const projectInfo = loadProjectInfo()
+const onSubmit = () => {
+        inputFactor();
+
+}
+onMounted(async () => {
+// 准备请求体
+const requestBody = { projectName: projectInfo.projectName };
+    // 发起后端请求
+    const response = await axios.post('/project/find', requestBody);
+    if (response.data.isOk) {
+        console.log(response.data.project);
+         project.value = response.data.project;
+    }
+     
+});
+
 </script>
 
 <style scoped>
