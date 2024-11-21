@@ -91,7 +91,7 @@ const activeStep = ref(5); // 当前步骤索引
 const router = useRouter();
 // 返回上一页面
 const goBack = () => {
-      router.push('/effortAssessmentmenu');  // 使用路径进行跳转
+      router.push('/riskAssessment');  // 使用路径进行跳转
 };
 // 从 localStorage 加载项目数据
 function loadProjectInfo() {
@@ -118,8 +118,8 @@ onMounted(async () => {
        project.value.projectTime=formatDate(project.value.projectTime);
            console.log(project)
       // 动态更新信息卡片的数据
-      infoCards[0].value = project.value.unadjustedFunctionPoints || 0; // 调整前规模
-      infoCards[1].value = project.value.adjustedFunctionPoints || 0;   // 调整后规模
+      infoCards[0].value = project.value.unadjustedFunctionPoints.toFixed(2) || 0; // 调整前规模
+      infoCards[1].value = project.value.adjustedFunctionPoints.toFixed(2) || 0;   // 调整后规模
       infoCards[2].value = project.value.personnelCosts || 0;           // 人月单价
       infoCards[3].value = project.value.ae || 0; // 调整后工作量 (假设比例)
       infoCards[4].value = (project.value.totalCost).toFixed(2) || 0;                // 软件开发费用

@@ -24,7 +24,7 @@
     <!-- 造价标准选择 -->
     <div class="standard-container">
       <label for="standard-select">造价标准:</label>
-      <el-select v-model="selectedStdId" placeholder="请选择造价标准" class="standard-select" @change="handleStdIdChange"
+      <el-select v-model="selectedStdId" placeholder="请选择造价标准" class="standard-select" @change="handleStdIdChange" :clearable="false"
         clearable>
         <el-option v-for="std in standardOptions" :key="std.value" :label="std.label" :value="std.value" />
       </el-select>
@@ -35,7 +35,7 @@
 
     <div v-for="(factor, index) in factors" :key="index" class="factor-container">
       <label :for="factor.name">{{ factor.label }}:</label>
-      <el-select v-model="factor.selectedValue" :placeholder="`请选择${factor.label}`" @change="handleSelectionChange(index)"
+      <el-select v-model="factor.selectedValue" :placeholder="`请选择${factor.label}`" @change="handleSelectionChange(index) "   :clearable="false"
         class="factor-select" clearable>
         <el-option v-for="option in factor.options" :key="option.value" :label="option.label" :value="option.value" />
       </el-select>
@@ -74,7 +74,7 @@
 
     <div class="pdr-container">
       <label for="pdr-input">PDR：</label>
-      <el-input v-model.number="pdrValue" placeholder="请输入PDR值" type="number" step="1" min="0" max="100"
+      <el-input v-model.number="pdrValue" placeholder="请输入PDR值" type="number" step="0.1" min="0.1" max="100"
         style="width: 100px; margin-left: 0px;" />
 
       <label for="pdr-input" style="margin-left: 50px;">平均人力成本：</label>
@@ -160,13 +160,18 @@ const newStandard = ref({
   enable: 'enabled' // 默认启用状态为 'enabled'
 });
 
-
+//平均人力成本下拉框
 const selectedOption = ref('');
-
 const provinces = ref([]);
 const years = ref([]); // 用来存储年份数据
 const cost = ref<number | null>(null);  // 初始化 cost 为 null
   const activeStep = ref(2); // 当前步骤索引
+const projectInfo = loadProjectInfo();
+const project=ref()
+const router = useRouter();
+
+
+
 
 // Cascader 组件的 props 配置
 const cascaderProps = {
@@ -269,7 +274,6 @@ const fetchStandardOptions = async () => {
     console.error('获取造价标准失败:', error);
   }
 };
-const router = useRouter();
 // 返回上一页面
 const goBack = () => {
       router.push('/FunctionPointsIdentify');  // 使用路径进行跳转
@@ -430,6 +434,7 @@ const saveStandardAndFactors = async () => {
 
     // 1. 保存标准
     const response = await axios.post('http://localhost:9000/CostStandard/addForStdId', newStandard.value);
+    console.log(response.data)
     const newStdId = response.data.stdId; // 假设返回的数据中有 stdId
 
 
@@ -474,13 +479,100 @@ const saveStandardAndFactors = async () => {
   }
 };
 
-onMounted(() => {
+const CalculateAndSaveAE = async () => {
+
+  if (isNextStepDisabled.value) {
+    ElMessage({
+      type: 'error',
+      message: '请填写完整信息',
+    })
+
+    return;
+  }
+
+  try {
+    const params = {
+      projectId: project.value.projectId,  // 项目ID
+      S: project.value.adjustedFunctionPoints,  // 其他参数
+      pdr: pdrValue.value,
+      personnelCosts: cost.value,
+      SF: parseFloat(factors.value.find(factor => factor.name === 'SF')?.selectedValue || ''),
+      BD: parseFloat(factors.value.find(factor => factor.name === 'BD')?.selectedValue || ''),
+      QR: parseFloat(factors.value.find(factor => factor.name === 'QR')?.selectedValue || ''),
+      AT: parseFloat(factors.value.find(factor => factor.name === 'AT')?.selectedValue || ''),
+      SL: parseFloat(factors.value.find(factor => factor.name === 'SL')?.selectedValue || ''),
+      DT: parseFloat(factors.value.find(factor => factor.name === 'DT')?.selectedValue || ''),
+      stdId: selectedStdId.value, // 造价标准ID
+    };
+
+    console.log("params:", JSON.stringify(params, null, 2));
+
+    // 通过 URL 查询参数发送请求
+    const response = await axios.post('http://localhost:9000/Factor/updateProject', params, {
+      headers: {
+        'Content-Type': 'application/json', // 确保请求头为 JSON 格式
+      },
+    });
+
+    if (response.data.status) {
+      ElMessage({
+        type: 'success',
+        message: 'AE计算并保存成功！',
+      });
+    } else {
+      ElMessage({
+        type: 'error',
+        message: 'AE计算并保存失败，请重试！',
+      });
+    }
+  } catch (error) {
+    console.error('AE计算并保存失败:', error);
+    ElMessage({
+      type: 'error',
+      message: 'AE计算并保存失败，请重试！',
+    });
+  }
+
+  router.push('/riskAssessment');
+};
+
+
+
+// 从 localStorage 加载项目数据
+function loadProjectInfo() {
+  const storedProject = localStorage.getItem('savedProject');
+  return storedProject ? JSON.parse(storedProject) : null;
+}
+
+const isNextStepDisabled = computed(() => {
+  // 检查所有因子是否都选择了值
+  const allSelected = factors.value.every(factor => factor.selectedValue !== '');
+  // 检查是否选择了造价标准
+  const isStdSelected = selectedStdId.value !== '';
+  // 检查PDR值是否大于0
+  const isPdrValid = pdrValue.value > 0;
+  // 检查是否选择了平均人力成本
+  const isCostSelected = selectedOption.value !== '';
+  
+  return !(allSelected && isStdSelected && isPdrValid && isCostSelected);
+});
+
+
+onMounted(async() => {
   fetchStandardOptions(); // 加载造价标准
   loadProvinces();  // 加载省份和年份数据
   factorTypes.forEach(factorType => {
     fetchFactorOptions(selectedStdId.value, factorType);
   });
   initChart();
+  // 准备请求体
+const requestBody = { projectName: projectInfo.projectName };
+    // 发起后端请求
+    const response = await axios.post('/project/find', requestBody);
+    if (response.data.isOk) {
+        console.log(response.data.project);
+         project.value = response.data.project;
+    }
 
 });
 </script>

@@ -1,6 +1,6 @@
 <template>
   <el-container class="layout">
-      <el-aside v-if="show" width="200px" class="aside">
+      <el-aside v-if="show" width="180px" class="aside">
         <menu-bar></menu-bar>
       </el-aside>
       <el-container>

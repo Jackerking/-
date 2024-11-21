@@ -100,7 +100,7 @@
         <div class="dialog-header">
           <el-tabs v-model="activeTab">
             <el-tab-pane label="本地项目" name="local"></el-tab-pane>
-            <el-tab-pane label="导入项目" name="import"></el-tab-pane>
+           
           </el-tabs>
         </div>
         <div class="dialog-content">

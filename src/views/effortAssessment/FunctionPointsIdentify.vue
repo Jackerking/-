@@ -1,5 +1,5 @@
 <template>
- <div class="header-title">
+  <div class="header-title">
         <span><button class="back-button" @click="goBack">
         &#8592; </button></span>
         <span>功能点评估</span>
@@ -20,6 +20,7 @@
         
       </el-steps>
   </div>
+
   <div class="common-layout">
     <el-container>
       <el-main>
@@ -39,8 +40,8 @@
               </el-card>
             </el-col>
             <el-col :span="15">
-              <el-card style="width: 115%; height: 100%; border-radius: 15px">
-                <div ref="echart" class="echart"></div>
+              <el-card style="width: 100%; height: 100%; border-radius: 15px">
+                <div ref="echart" class="echart" style="width: 100%; height: 248px"></div>
               </el-card>
             </el-col>
           </el-row>
@@ -81,7 +82,7 @@
             <el-table :data="tableData" :header-cell-style="{ background: 'black', color: 'white' }" stripe
               style="width: 100%; height: 300px; margin-top: 10px">
               <!-- <el-table-column prop="id" label="ID" width="150" align="center" /> -->
-              <el-table-column prop="triggeringSentence" label="功能点描述" width="700" header-align="center" />
+              <el-table-column prop="triggeringSentence" label="功能点描述" width="600" header-align="center" />
               <el-table-column prop="category" label="功能类型" align="center" />
               <el-table-column prop="unadjustedFunctionPoints" label="UFP" width="100" align="center" />
               <el-table-column prop="reuseLevel" label="重用程度" align="center" />
@@ -198,7 +199,10 @@ const ufcSource = ref(JSON.parse(localStorage.getItem('ufcSource') || '{}'));
 const ufcOutputValue = useTransition(ufcSource, {
   duration: 1500,
 })
-
+// 返回上一页面
+const goBack = () => {
+      router.push('/FunctionPointEvaluation');  // 使用路径进行跳转
+};
 //调整后功能点数量
 const usSource = ref(JSON.parse(localStorage.getItem('usSource') || '{}'));
 const usOutputValue = useTransition(usSource, {

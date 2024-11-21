@@ -85,10 +85,10 @@ background-color:#1f2d3d
     background-color:#001528
 }
 :deep(.el-menu-item.is-active){
-    color: #ffed49
+    color: #499eff
 }
 .el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 200px;
+  width: 180px;
   min-height: 400px;
 }
 

@@ -120,7 +120,7 @@ const updateChart = () => {
       orient: 'vertical',
       right: 'right',        // 设置图例距离右侧 10%
        top: '20%',          // 设置图例距离顶部 20%
-      data: ['需求变更风险', '预算超支风险', '人员短缺和技能不匹配风险', '项目延误风险', '软件质量风险', '软件进度风险', '项目管理风险'],
+      data: ['需求变更风险', '预算超支风险', '人员短缺风险', '项目延误风险', '软件质量风险', '软件进度风险', '项目管理风险'],
       textStyle: {
         fontSize: 12  // 设置图例字体大小为16，可以根据需要调整
       }
@@ -134,7 +134,7 @@ const updateChart = () => {
         data: [
           { value: highRisk.value, name: '需求变更风险' },
           { value: mediumRisk.value, name: '预算超支风险' },
-          { value: lowRisk.value, name: '人员短缺和技能不匹配风险' },
+          { value: lowRisk.value, name: '人员短缺风险' },
           { value: veryHighRisk.value, name: '项目延误风险' },
           { value: veryLowRisk.value, name: '软件质量风险' },
           { value: criticalRisk.value, name: '软件进度风险' },
