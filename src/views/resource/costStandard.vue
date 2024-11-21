@@ -158,12 +158,12 @@
             <el-input v-model="formData.stdName" />
           </el-form-item>
   
-          <!-- 参考造价标准下拉框 -->
+          <!-- 参考造价标准下拉框
           <el-form-item label="参考造价标准" :rules="[{ required: true, message: '请选择参考造价标准' }]">
             <el-select v-model="referenceId" placeholder="请选择参考造价标准">
               <el-option v-for="standard in standards" :key="standard.stdId" :label="standard.stdName" :value="standard.stdId" />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
   
   
           <!-- 描述 -->

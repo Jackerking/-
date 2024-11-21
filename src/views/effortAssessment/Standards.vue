@@ -75,8 +75,8 @@ const infoCards = reactive([
   { title: '调整后规模', value: 0, unit: '功能点' },
   { title: '人月单价', value: 0, unit: '人月' },
   { title: '调整后工作量', value: 0, unit: '人月' },
-  { title: '软件开发费用', value: 0, unit: '万元' },
-  { title: '功能点单价', value: 0, unit: '万元' },
+  { title: '软件开发费用', value: 0, unit: '元' },
+  { title: '功能点单价', value: 0, unit: '元' },
 ]);
 const project=ref()
 // 表格的数据
