@@ -1,5 +1,5 @@
 <template>
-  <div class="common-layout">
+  <el-card class="common-layout">
     <el-container>
       <el-main>
         <div>
@@ -18,8 +18,8 @@
               </el-card>
             </el-col>
             <el-col :span="15">
-              <el-card style="width: 115%; height: 100%; border-radius: 15px">
-                <div ref="echart" class="echart"></div>
+              <el-card style="width: 100%; height: 100%; border-radius: 15px">
+                <div ref="echart" class="echart" style="width: 100%; height: 248px"></div>
               </el-card>
             </el-col>
           </el-row>
@@ -73,7 +73,7 @@
         </div>
       </el-main>
     </el-container>
-  </div>
+  </el-card>
   <!-- 新增功能点表单对话框 -->
   <el-dialog title="添加功能点" v-model="addDialogVisible" width="30%">
     <el-form :model="addForm">

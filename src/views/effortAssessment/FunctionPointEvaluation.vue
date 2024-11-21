@@ -4,97 +4,96 @@
         <el-container>
             <el-main>
                 <el-card class="box-card">
-                    <template #header>
-                        <el-steps class="mb-4" style="max-width: 1200px" :space="200" :active="currentStep" simple>
-                            <el-step title="权重输入" :icon="Edit" @click="currentStep = 0" />
-                            <el-step title="通用系统因子" :icon="Edit" @click="currentStep = 1" />
-                            <el-step title="通用系统因子" :icon="Edit" @click="currentStep = 2" />
-                        </el-steps>
-                    </template>
+                    <!-- 使用el-row和el-col布局将表单分为三列 -->
+                    <el-row :gutter="20">
+                        <el-col :span="8">
+                            <!-- 第一列：权重输入 -->
+                            <el-form :model="fp" label-width="120px" label-position="left">
+                                <el-form-item label="ILF">
+                                    <el-input v-model="fp.ilfWeight" />
+                                </el-form-item>
+                                <el-form-item label="EIF">
+                                    <el-input v-model="fp.eifWeight" />
+                                </el-form-item>
+                                <el-form-item label="EI">
+                                    <el-input v-model="fp.eiWeight" />
+                                </el-form-item>
+                                <el-form-item label="EO">
+                                    <el-input v-model="fp.eoWeight" />
+                                </el-form-item>
+                                <el-form-item label="EQ">
+                                    <el-input v-model="fp.eqWeight" />
+                                </el-form-item>
+                                <el-form-item label="规模因子调整">
+                                    <el-select v-model="scaleChangeFactor" placeholder="请选择">
+                                        <el-option label="估算早期(如概算、预算阶段)，参数为1.39" value="估算早期" />
+                                        <el-option label="结算中期（如投标、项目计划阶段)，参数为1.21" value="估算中期" />
+                                        <el-option label="估算晚期(如需求分析阶段)，参数为1.10" value="估算晚期" />
+                                        <el-option label="项目交付后及运维阶段，参数为1.00" value="项目交付后及运维阶段" />
+                                    </el-select>
+                                </el-form-item>
+                            </el-form>
+                        </el-col>
+                        
+                        <el-col :span="8">
+                            <!-- 第二列：通用系统因子（第一组） -->
+                            <el-form :model="gp" label-width="120px" label-position="left">
+                                <el-form-item label="数据通信">
+                                    <el-input v-model="gp.communication" />
+                                </el-form-item>
+                                <el-form-item label="在线升级">
+                                    <el-input v-model="gp.onlineUpgrade" />
+                                </el-form-item>
+                                <el-form-item label="分布式处理">
+                                    <el-input v-model="gp.distributedProcessing" />
+                                </el-form-item>
+                                <el-form-item label="复杂处理度">
+                                    <el-input v-model="gp.complexity" />
+                                </el-form-item>
+                                <el-form-item label="性能">
+                                    <el-input v-model="gp.performance" />
+                                </el-form-item>
+                                <el-form-item label="可复用性">
+                                    <el-input v-model="gp.reusability" />
+                                </el-form-item>
+                                <el-form-item label="高使用强度配置">
+                                    <el-input v-model="gp.configuration" />
+                                </el-form-item>
+                            </el-form>
+                        </el-col>
+                        
+                        <el-col :span="8">
+                            <!-- 第三列：通用系统因子（第二组） -->
+                            <el-form :model="gp" label-width="120px" label-position="left">
+                                
+                                <el-form-item label="易安装性">
+                                    <el-input v-model="gp.easeOfInstallation" />
+                                </el-form-item>
+                                <el-form-item label="事务频度">
+                                    <el-input v-model="gp.transactionFrequency" />
+                                </el-form-item>
+                                <el-form-item label="易操作性">
+                                    <el-input v-model="gp.easeOfOperation" />
+                                </el-form-item>
+                                <el-form-item label="在线数据输入">
+                                    <el-input v-model="gp.onlineDataEntry" />
+                                </el-form-item>
+                                <el-form-item label="跨平台性">
+                                    <el-input v-model="gp.crossPlatform" />
+                                </el-form-item>
+                                <el-form-item label="用户使用利率">
+                                    <el-input v-model="gp.EndUserUsageRate" />
+                                </el-form-item>
+                                <el-form-item label="灵活性">
+                                    <el-input v-model="gp.flexibility" />
+                                </el-form-item>
+                            </el-form>
+                        </el-col>
+                    </el-row>
 
-                    <div v-show="currentStep === 0">
-                        <el-form :model="fp" label-width="auto" label-position="left">
-                            <el-form-item label="ILF">
-                                <el-input v-model="fp.ilfWeight" />
-                            </el-form-item>
-                            <el-form-item label="EIF">
-                                <el-input v-model="fp.eifWeight" />
-                            </el-form-item>
-                            <el-form-item label="EI">
-                                <el-input v-model="fp.eiWeight" />
-                            </el-form-item>
-                            <el-form-item label="EO">
-                                <el-input v-model="fp.eoWeight" />
-                            </el-form-item>
-                            <el-form-item label="EQ">
-                                <el-input v-model="fp.eqWeight" />
-                            </el-form-item>
-                            <el-form-item label="规模因子调整">
-                                <el-select v-model="scaleChangeFactor" placeholder="请选择">
-                                    <el-option label="估算早期(如概算、预算阶段)，参数为1.39" value="估算早期" />
-                                    <el-option label="结算中期【如投标、项日计划阶段)，参数为1.21" value="估算中期" />
-                                    <el-option label="估算晚期(如需求分析阶段)，参数为1.10" value="估算晚期" />
-                                    <el-option label="项目交付后及运维阶段，参数为1.00" value="项目交付后及运维阶段" />
-                                </el-select>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                    <div v-show="currentStep === 1">
-                        <el-form :model="gp" label-width="auto" label-position="left">
-                            <el-form-item label="数据通信">
-                                <el-input v-model="gp.communication" />
-                            </el-form-item>
-                            <el-form-item label="在线升级">
-                                <el-input v-model="gp.onlineUpgrade" />
-                            </el-form-item>
-                            <el-form-item label="分布式处理">
-                                <el-input v-model="gp.distributedProcessing" />
-                            </el-form-item>
-                            <el-form-item label="复杂处理度">
-                                <el-input v-model="gp.complexity" />
-                            </el-form-item>
-                            <el-form-item label="性能">
-                                <el-input v-model="gp.performance" />
-                            </el-form-item>
-                            <el-form-item label="可复用性">
-                                <el-input v-model="gp.reusability" />
-                            </el-form-item>
-                            <el-form-item label="高使用强度的配置">
-                                <el-input v-model="gp.configuration" />
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                    <div v-show="currentStep === 2">
-                        <el-form :model="gp" label-width="auto" label-position="left">
-                            <el-form-item label="易安装性">
-                                <el-input v-model="gp.easeOfInstallation" />
-                            </el-form-item>
-                            <el-form-item label="事务频度">
-                                <el-input v-model="gp.transactionFrequency" />
-                            </el-form-item>
-                            <el-form-item label="易操作性">
-                                <el-input v-model="gp.easeOfOperation" />
-                            </el-form-item>
-                            <el-form-item label="在线数据输入">
-                                <el-input v-model="gp.onlineDataEntry" />
-                            </el-form-item>
-                            <el-form-item label="跨平台性">
-                                <el-input v-model="gp.crossPlatform" />
-                            </el-form-item>
-                            <el-form-item label="终端用户使用利率">
-                                <el-input v-model="gp.EndUserUsageRate" />
-                            </el-form-item>
-                            <el-form-item label="灵活性">
-                                <el-input v-model="gp.flexibility" />
-                            </el-form-item>
-                        </el-form>
-                    </div>
                     <div class="form-bottom-button">
-                        <el-button v-show="currentStep !== 0" @click="currentStep--">上一步</el-button>
-                        <el-button v-show="currentStep === 2" type="primary" @click="onSubmit">提交</el-button>
-                        <el-button v-show="currentStep !== 2" @click="currentStep++">下一步</el-button>
+                        <el-button type="primary" @click="onSubmit">提交</el-button>
                     </div>
-
                 </el-card>
             </el-main>
         </el-container>
@@ -254,7 +253,6 @@ const requestBody = { projectName: projectInfo.projectName };
 }
 
 .el-form {
-    padding: 100px 500px 0px 500px;
-
+    padding: 20px;
 }
 </style>
