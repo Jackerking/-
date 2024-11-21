@@ -23,7 +23,7 @@ const negligibleRisk = ref(0);
 const showOverallRisk = ref(false);
 const overallRiskLevel = ref("");
 const overallRiskValue = ref("");
-
+const activeStep = ref(3); // 当前步骤索引
 // 控制路由
 const router = useRouter();
 const route = useRoute();
@@ -120,7 +120,7 @@ const updateChart = () => {
       orient: 'vertical',
       right: 'right',        // 设置图例距离右侧 10%
        top: '20%',          // 设置图例距离顶部 20%
-      data: ['需求变更风险', '预算超支风险', '人员短缺和技能不匹配风险', '项目延误风险', '软件质量风险', '软件进度风险', '项目管理风险'],
+      data: ['需求变更风险', '预算超支风险', '人员短缺风险', '项目延误风险', '软件质量风险', '软件进度风险', '项目管理风险'],
       textStyle: {
         fontSize: 12  // 设置图例字体大小为16，可以根据需要调整
       }
@@ -134,7 +134,7 @@ const updateChart = () => {
         data: [
           { value: highRisk.value, name: '需求变更风险' },
           { value: mediumRisk.value, name: '预算超支风险' },
-          { value: lowRisk.value, name: '人员短缺和技能不匹配风险' },
+          { value: lowRisk.value, name: '人员短缺风险' },
           { value: veryHighRisk.value, name: '项目延误风险' },
           { value: veryLowRisk.value, name: '软件质量风险' },
           { value: criticalRisk.value, name: '软件进度风险' },
@@ -189,7 +189,7 @@ onMounted(async() => {
       // 从返回的项目数据中提取 file_path
       const filePath = project.filePath;
       // 如果 filePath 存在，并且包含指定的前缀，则替换掉前缀
-      const prefix = "G:\\GiteeProjects\\软件产品构建实训\\webvue\\public";
+      const prefix = "E:\\qianduanzuixin\\ProductConsrtuct_frontend\\public";
       if (filePath && filePath.startsWith(prefix)) {
         docxSrc.value = filePath.replace(prefix, '');  // 去掉指定的前缀
       }
@@ -231,12 +231,35 @@ const getRiskLevel = (risk: any) => {
     return '高';
   }
 };
+// 返回上一页面
+const goBack = () => {
+      router.push('/effortAssessmentmenu');  // 使用路径进行跳转
+};
 // 设置本地文件的路径
 let docxSrc = ref(); // 示例文件路径
 </script>
 
 <template>
-  <Tabs></Tabs>
+  <div class="header-title">
+        <span><button class="back-button" @click="goBack" >
+        &#8592; </button></span>
+        <span>风险评估</span>
+  </div>
+  <div class="header-container">
+      <el-steps
+        :active="activeStep"
+        align-center
+        finish-status="success"
+        class="steps-container"
+      >
+        <!-- 步骤条内容 -->
+        <el-step title="GSC权值输入" name="FunctionPointEvaluation"></el-step>
+        <el-step title="功能点评估" name="FunctionPointsIdentify"></el-step>
+        <el-step title="工作量评估" name="effortAssessmentmenu"></el-step>
+        <el-step title="风险评估" name="riskAssessment"></el-step>
+        <el-step title="评估结果" name="standards"></el-step>
+      </el-steps>
+    </div>
   <div class="container">
     <!-- 左侧文档区域 -->
     <div class="docx-container">
@@ -322,6 +345,7 @@ let docxSrc = ref(); // 示例文件路径
   display: flex;
   width: 100%;
   height: 100vh;
+  margin-top: 20px;
 }
 
 /* 左侧文档区域 */
@@ -398,5 +422,32 @@ let docxSrc = ref(); // 示例文件路径
   width: 70%;  /* 设置为右侧容器宽度的 70% */
   height: 400px;  /* 设置饼图的高度 */
   min-height: 300px;
+}
+.header-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left; /* 左对齐 */
+    }
+
+
+  /* 返回按钮样式 */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start; /* 左对齐 */
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+.header-container {
+  max-width: 1000px; /* 根据需要调整宽度 */
+  margin: 0 auto;   /* 居中对齐 */
 }
 </style>

@@ -5,7 +5,7 @@
       <button class="back-button" @click="goBack">
         &#8592; 返回
       </button>
-    </div>
+  </div>
   <div class="container">
     <!-- 文件列表和删除操作 -->
     <div class="file-list">
@@ -107,7 +107,7 @@ const projectInfo = loadProjectInfo();
         });
         console.log('Word file uploaded successfully:', response.data);
         router.push({
-          path: "/fielddetail",
+          path: "/FunctionPointEvaluation",
           query: {
             fileId: response.data.id,
           }

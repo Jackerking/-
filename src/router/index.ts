@@ -80,7 +80,7 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         name: 'FunctionPointsIdentify',
-        path: '/functionPointsIdentify',
+        path: '/FunctionPointsIdentify',
         component: () => import("../views/effortAssessment/FunctionPointsIdentify.vue"),
         meta: {
           title: "功能点评估",
@@ -138,6 +138,15 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/effortAssessment/Standards.vue"),
         meta: {
           title: "用户详情",
+          icon: "Menu",
+        }
+      },
+      {
+        path: "/result",
+        name: "result",
+        component: () => import("../views/result/result.vue"),
+        meta: {
+          title: "评估结果",
           icon: "Menu",
         }
       },

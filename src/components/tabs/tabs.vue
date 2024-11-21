@@ -1,176 +1,176 @@
 <template>
+  <div class="header-title">
+        <span><button class="back-button" >
+        &#8592; 
+      </button></span>
+        <span>项目评估</span>
+  </div> 
     <div class="header-container">
-        <div class="header-title">
-            <span>项目评估</span>
+      <!-- <div class="header-title">
+        <span>项目评估</span>
+      </div> -->
+      <el-steps
+        :active="activeStep"
+        align-center
+        finish-status="success"
+        @change="handleStepChange"
+        class="steps-container"
+      >
+        <!-- 步骤条内容 -->
+        <el-step title="GSC权值输入" name="FunctionPointEvaluation"></el-step>
+        <el-step title="功能点评估" name="FunctionPointsIdentify"></el-step>
+        <el-step title="工作量评估" name="effortAssessmentmenu"></el-step>
+        <el-step title="风险评估" name="riskAssessment"></el-step>
+        <el-step title="评估结果" name="standards"></el-step>
+        <el-step title="功能点审核" name="review"></el-step>
+      </el-steps>
+      <!-- 弹框 -->
+      <el-dialog
+        v-model="dialogVisible"
+        @opened="handleOpened"
+        title="评估报告"
+        width="1200px"
+        top="5vh"
+      >
+        <div class="docWrap">
+          <div ref="file"></div>
         </div>
-        <el-tabs
-            v-model="activeTab"
-            type="card"
-            class="demo-tabs"
-            tab-position="bottom"
-            @tab-click="clickBtn"
-        >
-            <!-- 固定选项卡内容 -->
-            <el-tab-pane label="功能点评估" name="FunctionPointEvaluation"></el-tab-pane>
-            <el-tab-pane label="工作量评估" name="effortAssessmentmenu"></el-tab-pane>
-            <el-tab-pane label="风险评估" name="riskAssessment"></el-tab-pane>
-            <el-tab-pane label="评估结果" name="standards"></el-tab-pane>
-            <el-tab-pane label="功能点审核" name="review"></el-tab-pane>
-        </el-tabs>
-        <div class="header-buttons">
-            <el-button class="export-button">导出项目</el-button>
-            <el-button class="export-button">导出评估结果</el-button>
-        </div>
+      </el-dialog>
     </div>
-</template>
-
-<script lang="ts" setup>
-import { ref,watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { TabsPaneContext } from 'element-plus';
-
-const router = useRouter();
-const route = useRoute();
-const activeTab = ref(route.path || '/FunctionPointEvaluation'); // 根据路由设置初始选项卡
-
-const clickBtn = (pane: TabsPaneContext) => {
-    const { props } = pane;
-    activeTab.value = props.name as string; // 设置选中的选项卡
-    router.push({ path: props.name as string }); // 根据 name 属性跳转
-};
-// 监听路由变化，更新 activeTab
-watch(
+  </template>
+  
+  <script lang="ts" setup>
+  import { ref, watch, onMounted } from "vue";
+  import { useRouter, useRoute } from "vue-router";
+  import { exportWordImage, getWordImage } from "@/utils/exportFile";
+  import axios from "axios";
+  axios.defaults.baseURL = "/web";
+  
+  const router = useRouter();
+  const route = useRoute();
+  const activeStep = ref(0); // 当前步骤索引
+  const stepRoutes = [
+    "/FunctionPointEvaluation",
+    "/FunctionPointsIdentify",
+    "/effortAssessmentmenu",
+    "/riskAssessment",
+    "/standards",
+    "/review",
+  ];
+  const dialogVisible = ref(false);
+  const imgSize = ref({
+    imgPath: [150, 150],
+    imgPath1: [550, 250],
+  });
+  const htmlTitle = ref("启动方案");
+  const project = ref();
+  const projectInfo = loadProjectInfo();
+  
+  const handleStepChange = (newStep) => {
+    activeStep.value = newStep;
+    router.push({ path: stepRoutes[newStep] }); // 根据步骤跳转对应路由
+  };
+  
+  watch(
     () => route.path,
     (newPath) => {
-        activeTab.value = newPath;
+      activeStep.value = stepRoutes.findIndex((route) => route === newPath); // 根据路由更新当前步骤
     }
-);
-</script>
-
-<style lang="scss" scoped>
-.header-container {
+  );
+  
+  const downLoad = () => {
+    exportWordImage(
+      "../moban.docx",
+      project.value,
+      htmlTitle.value,
+      imgSize.value
+    );
+  };
+  // 处理时间
+  const formatDate = (time) => {
+    const date = new Date(time);
+    return date.toLocaleString(); // 输出格式类似：2024/4/21 14:20:52
+  };
+  // 从 localStorage 加载项目数据
+  function loadProjectInfo() {
+    const storedProject = localStorage.getItem("savedProject");
+    return storedProject ? JSON.parse(storedProject) : null;
+  }
+  onMounted(async () => {
+    // 准备请求体
+    const requestBody = { projectName: projectInfo.projectName };
+    // 发起后端请求
+    const response = await axios.post("/project/find", requestBody);
+    if (response.data.isOk) {
+      console.log(response.data.project);
+      project.value = response.data.project;
+      project.value.projectTime = formatDate(project.value.projectTime);
+    }
+  });
+  const goPreview = () => {
+    dialogVisible.value = true;
+  };
+  
+  const file = ref(null);
+  const handleOpened = () => {
+    getWordImage("../moban.docx", project.value, imgSize.value, file.value);
+  };
+  </script>
+  
+  <style lang="scss" scoped>
+  .header-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
     padding: 10px 20px;
     background-color: #f5f7fa;
     border-bottom: 1px solid #ebeef5;
-
-
-    .header-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-        margin-right: 150px; /* 添加标题与选项卡的间距 */
+  
+    .steps-container {
+      width: 100%;
+      max-width: 800px;
+      
     }
-
-    .recommend-tag {
-        font-size: 12px;
-        background-color: #eaf5ea;
-        color: #67c23a;
-    }
-
-    .timestamp {
-        font-size: 12px;
-        color: #909399;
-    }
-
-    .header-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f5f7fa;
-    border-bottom: 1px solid #ebeef5;
-
-    .header-title {
-        display: flex;
-        align-items: center;
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-        margin-right: 150px; /* 添加标题与选项卡的间距 */
-    }
-
-    .demo-tabs {
-        flex: 1;
-        margin-right: 20px;
-        margin-top: 1px; /* 根据需要调整间距 */
-
-        .el-tabs.demo-tabs {
-            margin: 0 auto;
-            width: 100%;
-            max-width: 900px; /* 控制最大宽度 */
-            background-color: #ffffff;
-            // height: auto; /* 容器高度自动适应内容 */
-        }
-
-        .el-tabs__header {
-            background-color: #f0f2f5; /* 选项卡区域背景为灰色 */
-            border-bottom: none;
-        }
-        .el-tabs__header {
-            background-color: #f0f2f5;
-            border-bottom: 1px solid #dcdfe6;
-            padding: 0 0 0 0; /* 设置上下左右的 padding 为 0，避免多余的内边距 */
-            height: 10px; /* 根据需要调整高度，确保与 el-tabs__nav-wrap 一致 */
-            box-sizing: border-box; /* 确保 border 和 padding 被包含在高度中 */
-        }
-
-        .el-tabs__nav-wrap.is-top {
-            background-color: #fff;
-            border-bottom: 1px solid #dcdfe6;
-            padding: 0 0 0 0; /* 移除多余的内边距 */
-            height: 40px; /* 设置相同的高度 */
-            box-sizing: border-box; /* 确保 border 和 padding 被包含在高度中 */
-        }
-
-        .el-tabs__item {
-            color: #606266;
-            font-size: 14px;
-            padding: 12px 20px;
-            transition: all 0.3s ease;
-            background-color: #f0f2f5; /* 未选中项背景灰色 */
-            border-right: 1px solid #dcdfe6; /* 分隔效果 */
-        }
-
-        .el-tabs__item:hover {
-            color: #409eff;
-        }
-
-        .el-tabs__item.is-active {
-            color: #409eff;
-            background-color: #ffffff; /* 选中的选项卡背景为白色 */
-            font-weight: bold;
-            border-bottom: 2px solid #409eff;
-        }
-    }
-
+  
     .header-buttons {
-        display: flex;
-
-        .export-button {
-            font-size: 14px;
-            font-weight: bold;
-            color: #606266;
-            background-color: #f0f2f5;
-            border: 1px solid #dcdfe6;
-        }
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+  
+      .export-button {
+        font-size: 14px;
+        font-weight: bold;
+        color: #606266;
+        background-color: #f0f2f5;
+        border: 1px solid #dcdfe6;
+      }
     }
-}
-    .header-buttons {
-        display: flex;
-        gap: 10px;
-
-        .export-button {
-            font-size: 14px;
-            font-weight: bold;
-            color: #606266;
-            background-color: #f0f2f5;
-            border: 1px solid #dcdfe6;
-        }
+  }
+  .header-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      text-align: left; /* 左对齐 */
     }
+  
+  .docWrap {
+    height: 700px;
+    overflow: auto;
+    clear: both;
+  }
+  /* 返回按钮样式 */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start; /* 左对齐 */
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  font-weight: bold;
 }
-</style>
+  </style>
+  

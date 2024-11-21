@@ -41,110 +41,26 @@ const handleClose = (key: string, keyPath: string[]) => {
 }
 let menuList= reactive([
     {
-        path:"/system",
-        name:"system",
+        path:"/home",
+        name:"home",
         component:"layout",
         meta:{
-            title:"管理系统",
+            title:"主页",
             icon:"menu",
             roles:["sys:sysyem"]
         },
-        children:[
-{
-    path:"/usermenu",
-    name:"user",
-    component:"/system/user/usermenu",
-    meta:{
-            title:"用户管理",
-            icon:"User",
-            roles:["sys:user"]
-        },
-        children:[
-        {
-            path:"/userdetail",
-    name:"userdetail",
-    component:"/system/user/userdetail",
-    meta:{
-            title:"用户详情",
-            icon:"Menu",
-            roles:["sys:userdetail"]
-        },
-        },
-        {
-            path:"/meetcreat",
-    name:"meetcreat",
-    component:"/system/meet/meetcreat",
-    meta:{
-            title:"会议创建",
-            icon:"Menu",
-            roles:["sys:meetcreat"]
-        },
-        },
-        {
-            path:"/meetedit",
-    name:"meetedit",
-    component:"/system/course/meetedit",
-    meta:{
-            title:"会议编辑", 
-            icon:"Menu",
-            roles:["sys:meetedit"]
-        },
-        }
-        ]
-},
-{
-    path:"/effortAssessmentmenu",
-    name:"effortAssessment",
-    component:"/system/effortAssessment/effortAssessmentmenu",
-    meta:{
-            title:"综合评估",
-            icon:"Avatar",
-            roles:["sys:effortAssessmentmenu"]
-        },
-        children:[
-        {
-            path:"/effortAssessmentmenu",
-    name:"effortAssessment",
-    component:"/system/effortAssessment/effortAssessmentmenu",
-    meta:{
-            title:"工作量评估",
-            icon:"Menu",
-            roles:["sys:effortAssessment"]
-        },
-        },
-        {
-            path:"/riskAssessment",
-    name:"riskAssessment",
-    component:"/system/effortAssessment/riskAssessment",
-    meta:{
-            title:"风险评估",
-            icon:"Menu",
-            roles:["sys:riskAssessment"]
-        },
-        },
-        {
-            path:"/meetedit",
-    name:"meetedit",
-    component:"/system/course/meetedit",
-    meta:{
-            title:"会议编辑", 
-            icon:"Menu",
-            roles:["sys:meetedit"]
-        },
-        }
-        ]
-},
-{
-    path:"/costStandard",
+    },
+    {
+            path:"/costStandard",
     name:"costStandard",
     component:"/system/resource/costStandard",
     meta:{
-            title:"资源数据",
-            icon:"Menu",
+            title:"造价标准",
+            icon:"User",
             roles:["sys:costStandard"]
         },
-        children:[
-        {
+    },
+    {
     path:"/industryData",
     name:"industryData",
     component:"/system/resource/industryData",
@@ -153,21 +69,8 @@ let menuList= reactive([
             icon:"Menu",
             roles:["sys:industryData"]
         },
-        },
-        {
-            path:"/costStandard",
-    name:"costStandard",
-    component:"/system/resource/costStandard",
-    meta:{
-            title:"造价标准",
-            icon:"Menu",
-            roles:["sys:costStandard"]
-        },
-        },
-        ]
-},
-        ]
-    }
+    },
+    
     
 ])
 </script>
