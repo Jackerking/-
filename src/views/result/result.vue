@@ -1,28 +1,11 @@
 <template>
   <div class="header-title">
-        <span><button class="back-button" @click="goBack">
-        &#8592; </button></span>
-        <span>评估结果</span>
-  </div>
-  <div class="header-container">
-      <el-steps
-        :active="activeStep"
-        align-center
-        finish-status="success"
-        class="steps-container"
-      >
-        <!-- 步骤条内容 -->
-        <el-step title="GSC权值输入" name="FunctionPointEvaluation"></el-step>
-        <el-step title="功能点评估" name="FunctionPointsIdentify"></el-step>
-        <el-step title="工作量评估" name="effortAssessmentmenu"></el-step>
-        <el-step title="风险评估" name="riskAssessment"></el-step>
-        <el-step title="评估结果" name="standards"></el-step>
+        <span>项目评估结果</span>
         <sapn class="button">
         <el-button type="default" @click="downLoad"> 下载启动方案 </el-button>
         <el-button type="default" @click="goPreview"> 预览启动方案 </el-button>
         </sapn>
-      </el-steps>
-  </div>
+      </div>
   <div class="container">
     <!-- 信息卡片区域 -->
     <div class="card-container">
@@ -62,10 +45,10 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import * as echarts from 'echarts';
+import Tabs from '@/components/tabs/tabs.vue';
+import { exportWordImage, getWordImage } from "@/utils/exportFile";
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
-import { useRouter, useRoute } from 'vue-router';
-import { exportWordImage, getWordImage } from "@/utils/exportFile";
 
 axios.defaults.baseURL = '/web';
 
@@ -78,7 +61,12 @@ const infoCards = reactive([
   { title: '软件开发费用', value: 0, unit: '万元' },
   { title: '功能点单价', value: 0, unit: '万元' },
 ]);
-const project=ref()
+
+const dialogVisible = ref(false);
+const imgSize = ref({
+  imgPath: [150, 150],
+  imgPath1: [550, 250],
+});
 // 表格的数据
 const tableData = ref([
   { category: 'EO', amount: 0 },
@@ -87,12 +75,7 @@ const tableData = ref([
   { category: 'ILF', amount: 0 },
   { category: 'EIF', amount: 0 },
 ]);
-const activeStep = ref(5); // 当前步骤索引
-const router = useRouter();
-// 返回上一页面
-const goBack = () => {
-      router.push('/effortAssessmentmenu');  // 使用路径进行跳转
-};
+
 // 从 localStorage 加载项目数据
 function loadProjectInfo() {
   const storedProject = localStorage.getItem('savedProject');
@@ -100,6 +83,7 @@ function loadProjectInfo() {
 }
 
 const projectInfo = loadProjectInfo();
+const project=ref()
 
 // 初始化柱状图
 onMounted(async () => {
@@ -116,7 +100,6 @@ onMounted(async () => {
     if (response.data.isOk) {
        project.value = response.data.project;
        project.value.projectTime=formatDate(project.value.projectTime);
-           console.log(project)
       // 动态更新信息卡片的数据
       infoCards[0].value = project.value.unadjustedFunctionPoints || 0; // 调整前规模
       infoCards[1].value = project.value.adjustedFunctionPoints || 0;   // 调整后规模
@@ -167,13 +150,6 @@ onMounted(async () => {
     ElMessage.error('获取项目数据失败');
   }
 });
-
-const dialogVisible = ref(false);
-const imgSize = ref({
-  imgPath: [150, 150],
-  imgPath1: [550, 250],
-});
-
 const htmlTitle = ref("启动方案");
 const downLoad = () => {
   exportWordImage(
@@ -257,32 +233,14 @@ const handleOpened = () => {
   width: 100%;
   height: 400px;
 }
-/* 返回按钮样式 */
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start; /* 左对齐 */
-  background: none;
-  border: none;
-  color: #333;
-  font-size: 20px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  padding: 5px 10px;
-  font-weight: bold;
-}
 .header-title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       color: #333;
-      margin-bottom: 20px;
+     
       text-align: left; /* 左对齐 */
     }
-    .header-container {
-  max-width: 1000px; /* 根据需要调整宽度 */
-  margin: 0 auto;   /* 居中对齐 */
-}
-.button {
+    .button {
   display: block; /* 确保 span 作为块级元素 */
   text-align: right; /* 右对齐 */
 }

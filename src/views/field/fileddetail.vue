@@ -111,7 +111,7 @@ async function getFileUrl(fileId) {
     const response = await axios.get(`/api/view/download/url/${fileId}`);
     if (response.data) {
       const fullFilePath = response.data;
-      const prefix = "C:\\Users\\93229\\Desktop\\aaaaa\\ProductConsrtuct_frontend\\public";
+      const prefix = "E:\\qianduanzuixin\\ProductConsrtuct_frontend\\public";
       if (fullFilePath && fullFilePath.startsWith(prefix)) {
         const relativePath = fullFilePath.replace(prefix, '');
         const extension = relativePath.split('.').pop().toLowerCase();

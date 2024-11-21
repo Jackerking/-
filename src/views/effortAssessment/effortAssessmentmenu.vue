@@ -1,5 +1,25 @@
 <template>
-  <Tabs></Tabs>
+  <div class="header-title">
+        <span><button class="back-button" @click="goBack">
+        &#8592; </button></span>
+        <span>工作量评估</span>
+  </div>
+  <div class="header-container">
+      <el-steps
+        :active="activeStep"
+        align-center
+        finish-status="success"
+        class="steps-container"
+      >
+        <!-- 步骤条内容 -->
+        <el-step title="GSC权值输入" name="FunctionPointEvaluation"></el-step>
+        <el-step title="功能点评估" name="FunctionPointsIdentify"></el-step>
+        <el-step title="工作量评估" name="effortAssessmentmenu"></el-step>
+        <el-step title="风险评估" name="riskAssessment"></el-step>
+        <el-step title="评估结果" name="standards"></el-step>
+        
+      </el-steps>
+  </div>
   <div>
     <!-- 造价标准选择 -->
     <div class="standard-container">
@@ -10,6 +30,7 @@
       </el-select>
       <!-- 新标准保存按钮 -->
       <el-button type="primary" @click="openNewStandardDialog">保存造价标准</el-button>
+      <el-button type="primary" @click="go">下一步</el-button>
     </div>
 
     <div v-for="(factor, index) in factors" :key="index" class="factor-container">
@@ -113,6 +134,7 @@ import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
 import { ElMessage } from 'element-plus';
+import { useRouter } from 'vue-router';
 
 const factors = ref([
   { name: 'SF', label: '规模调整', selectedValue: '', options: [], tempEditOption: [] },
@@ -144,6 +166,7 @@ const selectedOption = ref('');
 const provinces = ref([]);
 const years = ref([]); // 用来存储年份数据
 const cost = ref<number | null>(null);  // 初始化 cost 为 null
+  const activeStep = ref(2); // 当前步骤索引
 
 // Cascader 组件的 props 配置
 const cascaderProps = {
@@ -246,7 +269,15 @@ const fetchStandardOptions = async () => {
     console.error('获取造价标准失败:', error);
   }
 };
-
+const router = useRouter();
+// 返回上一页面
+const goBack = () => {
+      router.push('/FunctionPointsIdentify');  // 使用路径进行跳转
+    };
+// 跳转下一个一页面
+const go = () => {
+      router.push('/riskAssessment');  // 使用路径进行跳转
+    };
 
 const showEditDialog = (index: number) => {
   const factor = factors.value[index];
@@ -618,6 +649,31 @@ onMounted(() => {
 .pdr-container .el-input {
   width: 15px;
   margin-left: 20px;
+}
+/* 返回按钮样式 */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start; /* 左对齐 */
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+.header-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left; /* 左对齐 */
+    }
+    .header-container {
+  max-width: 1000px; /* 根据需要调整宽度 */
+  margin: 0 auto;   /* 居中对齐 */
 }
 </style>
 

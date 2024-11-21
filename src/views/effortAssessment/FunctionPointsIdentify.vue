@@ -1,4 +1,25 @@
 <template>
+ <div class="header-title">
+        <span><button class="back-button" @click="goBack">
+        &#8592; </button></span>
+        <span>功能点评估</span>
+  </div>
+  <div class="header-container">
+      <el-steps
+        :active="activeStep"
+        align-center
+        finish-status="success"
+        class="steps-container"
+      >
+        <!-- 步骤条内容 -->
+        <el-step title="GSC权值输入" name="FunctionPointEvaluation"></el-step>
+        <el-step title="功能点评估" name="FunctionPointsIdentify"></el-step>
+        <el-step title="工作量评估" name="effortAssessmentmenu"></el-step>
+        <el-step title="风险评估" name="riskAssessment"></el-step>
+        <el-step title="评估结果" name="standards"></el-step>
+        
+      </el-steps>
+  </div>
   <div class="common-layout">
     <el-container>
       <el-main>
@@ -50,6 +71,10 @@
               <!-- 添加功能点 -->
               <el-col :span="1.5">
                 <el-button type="success" size="small" :icon="Plus" @click="showAddDialog">添加</el-button>
+              </el-col>
+              <!-- 添加功能点 -->
+              <el-col :span="1.5">
+                <el-button type="success" size="small" :icon="Plus" @click="go">下一步</el-button>
               </el-col>
             </el-row>
             <!-- 功能点明细列表 -->
@@ -165,6 +190,7 @@ import * as echarts from 'echarts';
 import { ECharts } from 'echarts';
 import { nextTick } from 'vue';
 axios.defaults.withCredentials = true;
+import { useRouter, useRoute } from 'vue-router';
 
 //数据显示
 //调整前功能点数量
@@ -227,6 +253,11 @@ const loadMenus = async () => {
 
 const chartInstance = ref<ECharts | null>(null);
 
+  const router = useRouter();
+// 跳转下一个一页面
+const go = () => {
+      router.push('/effortAssessmentmenu');  // 使用路径进行跳转
+    };
 // 初始化图表
 const initChart = () => {
   if (chartInstance.value && chartInstance.value.dispose) {
@@ -269,6 +300,8 @@ const addForm = reactive({
 
 //打开添加表单
 const addDialogVisible = ref(false);
+
+const activeStep = ref(1); // 当前步骤索引
 
 const showAddDialog = () => {
   addDialogVisible.value = true;
@@ -465,5 +498,30 @@ onMounted(() => {
 .echart {
   width: 100%;
   height: 400px; 
+}
+/* 返回按钮样式 */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start; /* 左对齐 */
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+.header-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left; /* 左对齐 */
+    }
+    .header-container {
+  max-width: 1000px; /* 根据需要调整宽度 */
+  margin: 0 auto;   /* 居中对齐 */
 }
 </style>

@@ -21,6 +21,24 @@ const routes: Array<RouteRecordRaw> = [
         }
       ]
     },
+    {
+      //路由初始指向
+        path: "/",
+        component:Layout,
+        redirect: "/home",
+        children:[
+          {
+            path:"/home",
+            name:"home",
+            component: () => import("../views/home/home.vue"),
+            meta:{
+              title:"首页",
+              icon:"menu",
+          },
+  
+          }
+        ]
+      },
   
     {
       path:"/system",
@@ -69,16 +87,6 @@ const routes: Array<RouteRecordRaw> = [
       },
 },
 {
-  path:"/meetmenu",
-  name:"meet",
-  component: () => import("../views/meet/meetmenu.vue"),
-  meta:{
-          title:"会议管理",
-          icon:"Menu",
-      },
-      
-},
-{
   path:"/FunctionPointEvaluation",
   name:"FunctionPointEvaluation",
   component: () => import("../views/effortAssessment/FunctionPointEvaluation.vue"),
@@ -116,11 +124,11 @@ const routes: Array<RouteRecordRaw> = [
   }
 },
 {
-  path:"/fielddetail",
-  name:"fielddetail",
-  component: () => import("../views/field/fileddetail.vue"),
+  path:"/result",
+  name:"result",
+  component: () => import("../views/result/result.vue"),
       meta:{
-          title:"行业详情", 
+          title:"评估结果详情", 
           icon:"Menu",
   }
 },
@@ -133,15 +141,7 @@ const routes: Array<RouteRecordRaw> = [
           icon:"Menu",
   }
 },
-{
-  path:"/userdetail",
-  name:"userdetail",
-  component: () => import("../views/user/userdetail.vue"),
-      meta:{
-          title:"用户详情", 
-          icon:"Menu",
-  }
-},
+
 {
   path:"/Standards",
   name:"Standards",
@@ -152,13 +152,13 @@ const routes: Array<RouteRecordRaw> = [
   }
 },
 {
-  path:"/meetingdetail",
-  name:"meetingdetail",
-  component: () => import("../views/meet/meetingdetail.vue"),
-      meta:{
-          title:"会议详情", 
+  path:"/fileddetail",
+  name:"fileddetail",
+  component: () => import("../views/field/fileddetail.vue"),
+  meta:{
+          title:"上传文件",
           icon:"Menu",
-  }
+      },
 },
       ]
   }

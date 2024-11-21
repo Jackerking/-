@@ -107,7 +107,7 @@ const projectInfo = loadProjectInfo();
         });
         console.log('Word file uploaded successfully:', response.data);
         router.push({
-          path: "/fielddetail",
+          path: "/FunctionPointEvaluation",
           query: {
             fileId: response.data.id,
           }

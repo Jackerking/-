@@ -1,5 +1,25 @@
 <template>
-    <Tabs></Tabs>
+    <div class="header-title">
+        <span><button class="back-button" @click="goBack">
+        &#8592; </button></span>
+        <span>工作量评估</span>
+  </div>
+  <div class="header-container">
+      <el-steps
+        :active="activeStep"
+        align-center
+        finish-status="success"
+        class="steps-container"
+      >
+        <!-- 步骤条内容 -->
+        <el-step title="GSC权值输入" name="FunctionPointEvaluation"></el-step>
+        <el-step title="功能点评估" name="FunctionPointsIdentify"></el-step>
+        <el-step title="工作量评估" name="effortAssessmentmenu"></el-step>
+        <el-step title="风险评估" name="riskAssessment"></el-step>
+        <el-step title="评估结果" name="standards"></el-step>
+        
+      </el-steps>
+  </div>
     <div class="common-layout">
         <el-container>
             <el-main>
@@ -256,5 +276,30 @@ const requestBody = { projectName: projectInfo.projectName };
 .el-form {
     padding: 100px 500px 0px 500px;
 
+}
+/* 返回按钮样式 */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start; /* 左对齐 */
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+.header-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left; /* 左对齐 */
+    }
+    .header-container {
+  max-width: 1000px; /* 根据需要调整宽度 */
+  margin: 0 auto;   /* 居中对齐 */
 }
 </style>

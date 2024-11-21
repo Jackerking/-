@@ -93,14 +93,7 @@
       </el-col>
     </el-row>
   
-      <el-pagination
-        v-model:current-page="pagination.currentPage"
-        :page-size="pagination.pageSize"
-        :total="filteredProjects.length"
-        @current-change="handlePageChange"
-        layout="total, prev, pager, next, sizes"
-        :page-sizes="[10, 20, 30, 50]"
-      />
+     
   
       <!-- 新增项目对话框 -->
       <el-dialog v-model="dialogVisible" title="新增项目" width="600px">
@@ -167,7 +160,7 @@ const router = useRouter();
       const response = await axios.get(`/project/projects?userId=${userId.value}`);
       if (response.data && Array.isArray(response.data)) {
         projects.value = response.data; // 设置项目数据
-        console.log(projects.value); // 打印项目数据
+        console.log(projects.value.length); // 打印项目数据
       } else {
         ElMessage.error("加载项目失败");
       }
@@ -224,14 +217,29 @@ const router = useRouter();
   
   
   // 查看详情操作
-  const viewDetails = (projectName) => {
-    ElMessage.info(`查看项目详情: ${projectName}`);
+  const viewDetails = async(projectName) => {
+    console.log(projectName)
+      try {
+    // 调用后端接口，传递项目名称
+    const response = await axios.post('/project/find', { projectName });
+
+    // 判断返回结果
+    if (response.data.isOk) {
+      console.log('项目查找成功', response.data.project);
+      
+      // 保存返回的项目数据到 LocalStorage
+      localStorage.setItem('savedProject', JSON.stringify(response.data.project));
+
+      // 跳转到其他页面，例如 '/fieldmenu'
+      router.push('/result');
+    } else {
+      console.error('项目查找失败');
+    }
+  } catch (error) {
+    console.error('请求失败', error);
+  }
   };
-  // 分页数据
-  const pagination = reactive({
-    currentPage: 1,
-    pageSize: 10,
-  });
+
   // 应用筛选条件
   const applyFilters = (projects) => {
     if (filters.value.status === "all") {
@@ -255,19 +263,17 @@ const router = useRouter();
   
   
   
-  // 筛选后的项目
+
   const filteredProjects1 = computed(() => {
-    console.log('projects:', projects.value); // 打印项目数据
-    if (Array.isArray(projects.value)) {
-      return projects.value.slice(
-        (pagination.currentPage - 1) * pagination.pageSize,
-        pagination.currentPage * pagination.pageSize
-      );
-    } else {
-      console.error('projects is not an array:', projects.value);
-      return [];
-    }
-  });
+  console.log('projects:', projects.value.length); // 打印项目数据
+  if (Array.isArray(projects.value)) {
+    return projects.value;
+  } else {
+    console.error('projects is not an array:', projects.value);
+    return [];
+  }
+});
+
   const filteredProjects = ref([]); // 筛选后的项目列表
   
   // 表单相关
