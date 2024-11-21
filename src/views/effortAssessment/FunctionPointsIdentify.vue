@@ -56,7 +56,7 @@
             <el-table :data="tableData" :header-cell-style="{ background: 'black', color: 'white' }" stripe
               style="width: 100%; height: 300px; margin-top: 10px">
               <!-- <el-table-column prop="id" label="ID" width="150" align="center" /> -->
-              <el-table-column prop="triggeringSentence" label="功能点描述" width="700" header-align="center" />
+              <el-table-column prop="triggeringSentence" label="功能点描述" width="600" header-align="center" />
               <el-table-column prop="category" label="功能类型" align="center" />
               <el-table-column prop="unadjustedFunctionPoints" label="UFP" width="100" align="center" />
               <el-table-column prop="reuseLevel" label="重用程度" align="center" />
