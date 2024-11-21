@@ -164,42 +164,8 @@ let menuList= reactive([
             roles:["sys:costStandard"]
         },
         },
-        {
-            path:"/meetedit",
-    name:"meetedit",
-    component:"/system/course/meetedit",
-    meta:{
-            title:"会议编辑", 
-            icon:"Menu",
-            roles:["sys:meetedit"]
-        },
-        }
         ]
 },
-{
-    path:"/meetmenu",
-    name:"meet",
-    component:"/system/meet/meetmenu",
-    meta:{
-            title:"会议管理",
-            icon:"Menu",
-            roles:["sys:meet"]
-        },
-        children:[
-        {
-            path:"/meetingdetail",
-    name:"meetingdetail",
-    component:"/system/meet/meetingdetail",
-    meta:{
-            title:"会议详情",
-            icon:"Menu",
-            roles:["sys:meetingdetail"]
-        },
-        },
-        
-        
-        ]
-}
         ]
     }
     

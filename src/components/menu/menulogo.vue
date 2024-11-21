@@ -12,7 +12,7 @@ import { watch, ref } from 'vue';
 import { menuStore } from '../../store/menu';
 
     
-    const title= ref('测盟汇')
+    const title= ref('软件造价')
     const store = menuStore();
 // const show=computed(()=>{
 // return !store.getCollapse
@@ -50,7 +50,7 @@ watch(
     .llo{
         width: 50px;
         height: 50px;
-        margin-right: 25px;
+        margin-right: 10px;
         margin-left: 0px;
     }
     .title{
