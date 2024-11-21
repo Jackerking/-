@@ -320,7 +320,25 @@ const initChart = () => {
       barWidth: 60,
       data: factors.value.map(factor => factor.selectedValue || 0),
       emphasis: { focus: 'series' }
-    }]
+    }],
+        // 添加水平线
+        markLine: {
+      data: [
+        {
+          yAxis: 1, // 设定水平线的位置
+          label: {
+            show: true,
+            position: 'insideEndTop', // 使文字标注显示在水平线的上方
+            formatter: '1', // 文字内容为 1
+          },
+          lineStyle: {
+            type: 'solid',
+            color: '#1f0000', // 可以根据需要修改颜色
+            width: 2
+          }
+        }
+      ]
+    }
   };
   chart.setOption(chartOptions);
 };
@@ -539,7 +557,7 @@ onMounted(async() => {
   // 准备请求体
 const requestBody = { projectName: projectInfo.projectName };
     // 发起后端请求
-    const response = await axios.post('/project/find', requestBody);
+    const response = await axios.post('http://localhost:9000/project/find', requestBody);
     if (response.data.isOk) {
         console.log(response.data.project);
          project.value = response.data.project;
