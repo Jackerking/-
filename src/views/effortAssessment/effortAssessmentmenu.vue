@@ -281,7 +281,6 @@ const goBack = () => {
 // 跳转下一个一页面
 const go = () => {
       CalculateAndSaveAE();
-      router.push('/riskAssessment');  // 使用路径进行跳转
     };
 
 const showEditDialog = (index: number) => {
