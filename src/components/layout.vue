@@ -1,10 +1,10 @@
 <template>
   <el-container class="layout">
-      <el-aside v-if="show" width="200px" class="aside">
+      <el-aside v-if="show" width="180px" class="aside">
         <menu-bar></menu-bar>
       </el-aside>
       <el-container>
-
+       
         <el-main class="main">
           <!-- 删除了 Tabs 组件 -->
           <router-view></router-view>
@@ -46,7 +46,7 @@
     }
   
     .footer {
-      background-color: #333; // 深灰色页脚，与头部形成对比
+      background-color: #fff; // 深灰色页脚，与头部形成对比
       color: #fff; // 白色文字，确保可读性
     }
   }

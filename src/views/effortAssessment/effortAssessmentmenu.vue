@@ -1,5 +1,25 @@
 <template>
-  <Tabs></Tabs>
+  <div class="header-title">
+        <span><button class="back-button" @click="goBack">
+        &#8592; </button></span>
+        <span>工作量评估</span>
+  </div>
+  <div class="header-container">
+      <el-steps
+        :active="activeStep"
+        align-center
+        finish-status="success"
+        class="steps-container"
+      >
+        <!-- 步骤条内容 -->
+        <el-step title="GSC权值输入" name="FunctionPointEvaluation"></el-step>
+        <el-step title="功能点评估" name="FunctionPointsIdentify"></el-step>
+        <el-step title="工作量评估" name="effortAssessmentmenu"></el-step>
+        <el-step title="风险评估" name="riskAssessment"></el-step>
+        <el-step title="评估结果" name="standards"></el-step>
+        
+      </el-steps>
+  </div>
   <div>
     <!-- 造价标准选择 -->
     <div class="standard-container">
@@ -10,7 +30,7 @@
       </el-select>
       <!-- 新标准保存按钮 -->
       <el-button type="primary" @click="openNewStandardDialog">保存造价标准</el-button>
-      <el-button type="primary" @click="CalculateAndSaveAE">下一步</el-button>
+      <el-button type="primary" @click="go">下一步</el-button>
     </div>
 
     <div v-for="(factor, index) in factors" :key="index" class="factor-container">
@@ -145,6 +165,7 @@ const selectedOption = ref('');
 const provinces = ref([]);
 const years = ref([]); // 用来存储年份数据
 const cost = ref<number | null>(null);  // 初始化 cost 为 null
+  const activeStep = ref(2); // 当前步骤索引
 const projectInfo = loadProjectInfo();
 const project=ref()
 const router = useRouter();
@@ -253,7 +274,15 @@ const fetchStandardOptions = async () => {
     console.error('获取造价标准失败:', error);
   }
 };
-
+// 返回上一页面
+const goBack = () => {
+      router.push('/FunctionPointsIdentify');  // 使用路径进行跳转
+    };
+// 跳转下一个一页面
+const go = () => {
+      CalculateAndSaveAE();
+      router.push('/riskAssessment');  // 使用路径进行跳转
+    };
 
 const showEditDialog = (index: number) => {
   const factor = factors.value[index];
@@ -320,7 +349,25 @@ const initChart = () => {
       barWidth: 60,
       data: factors.value.map(factor => factor.selectedValue || 0),
       emphasis: { focus: 'series' }
-    }]
+    }],
+        // 添加水平线
+        markLine: {
+      data: [
+        {
+          yAxis: 1, // 设定水平线的位置
+          label: {
+            show: true,
+            position: 'insideEndTop', // 使文字标注显示在水平线的上方
+            formatter: '1', // 文字内容为 1
+          },
+          lineStyle: {
+            type: 'solid',
+            color: '#1f0000', // 可以根据需要修改颜色
+            width: 2
+          }
+        }
+      ]
+    }
   };
   chart.setOption(chartOptions);
 };
@@ -406,6 +453,7 @@ const saveStandardAndFactors = async () => {
 
     // 1. 保存标准
     const response = await axios.post('http://localhost:9000/CostStandard/addForStdId', newStandard.value);
+    console.log(response.data)
     const newStdId = response.data.stdId; // 假设返回的数据中有 stdId
 
 
@@ -539,7 +587,7 @@ onMounted(async() => {
   // 准备请求体
 const requestBody = { projectName: projectInfo.projectName };
     // 发起后端请求
-    const response = await axios.post('/project/find', requestBody);
+    const response = await axios.post('http://localhost:9000/project/find', requestBody);
     if (response.data.isOk) {
         console.log(response.data.project);
          project.value = response.data.project;
@@ -712,6 +760,31 @@ const requestBody = { projectName: projectInfo.projectName };
 .pdr-container .el-input {
   width: 15px;
   margin-left: 20px;
+}
+/* 返回按钮样式 */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start; /* 左对齐 */
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+.header-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+      text-align: left; /* 左对齐 */
+    }
+    .header-container {
+  max-width: 1000px; /* 根据需要调整宽度 */
+  margin: 0 auto;   /* 居中对齐 */
 }
 </style>
 

@@ -32,10 +32,15 @@
             <!-- 搜索和重置按钮 -->
             <el-col :span="4">
               <el-row type="flex" justify="end">
-                <el-button type="primary" @click="searchStandards" class="action-button">搜索</el-button>
-                <el-button type="default" @click="resetSearch" class="action-button">重置</el-button>
+                <el-button type="primary" @click="searchStandards" class="action-button" icon="Search">
+                  搜索
+                </el-button>
+                <el-button type="default" @click="resetSearch" class="action-button" icon="RefreshRight">
+                  重置
+                </el-button>
               </el-row>
             </el-col>
+
           </el-row>
           <hr class="divider" />
         </el-header>
@@ -54,64 +59,84 @@
           </el-col>
   
           <!-- 展示现有的造价标准卡片 -->
-          <el-col v-for="standard in paginatedStandards" :key="standard.stdId" :span="8" v-if="filteredStandards.length > 0">
-            <el-card class="standard-card">
-              <div class="card-header">
-                <!-- 根据标准类型设置不同字体颜色 -->
-                <span :class="{'official-type': standard.type === 'official', 'custom-type': standard.type === 'history'}">
-                  {{ standard.type === 'official' ? '官方' : '自定义' }}
-                </span>
-  
-                <!-- 启用/禁用按钮，根据状态修改颜色 -->
-                <el-button 
-                  size="small" 
-                  :type="standard.enable === 'enabled' ? 'success' : 'danger'" 
-                  @click="toggleStatus(standard)">
-                  {{ standard.enable === 'enabled' ? '启用' : '禁用' }}
-                </el-button>
-              </div>
-  
-              <div class="card-body">
-                <div class="card-content">
-                  <h3>{{ standard.stdName }}</h3>
-                  <p>{{ standard.intro }}</p>
-                </div>
-  
-                <div class="button-group">
-                  <!-- 如果是历史标准，显示修改参数和删除按钮 -->
-                  <el-button 
-                    v-if="standard.type === 'history'" 
-                    size="small" 
-                    type="info" 
-                    class="view-button" 
-                    @click="editParameters(standard)">
-                    修改
-                  </el-button>
-  
-                  <el-button 
-                    v-if="standard.type === 'history'" 
-                    size="small" 
-                    type="danger" 
-                    @click="deleteStandard(standard)" 
-                    class="delete-button"
-                    aria-label="删除标准"
-                    title="删除标准">
-                    删除
-                  </el-button>
-  
-                  <!-- 如果是官方标准，显示查看参数按钮 -->
-                  <el-button 
-                    v-else 
-                    size="small" 
-                    type="info" 
-                    class="view-button" 
-                    @click="viewParameters(standard)">
-                    查看参数
-                  </el-button>
-                </div>
-              </div>
-            </el-card>
-          </el-col>
+
+           <el-col 
+  v-for="standard in paginatedStandards" 
+  :key="standard.stdId" 
+  :span="8" 
+  v-if="filteredStandards.length > 0"
+>
+  <el-card class="standard-card">
+    <div class="card-header">
+      <!-- 根据标准类型设置不同字体颜色 -->
+      <span :class="{'official-type': standard.type === 'official', 'custom-type': standard.type === 'history'}">
+        {{ standard.type === 'official' ? '官方' : '自定义' }}
+      </span>
+
+      <!-- 启用/禁用按钮，根据状态修改颜色 -->
+      <el-button 
+        size="small" 
+        :type="standard.enable === 'enabled' ? 'success' : 'danger'" 
+        @click="toggleStatus(standard)"
+        :icon="standard.enable === 'enabled' ? 'Check' : 'Close'"
+        circle
+      >
+      </el-button>
+    </div>
+
+
+    <div class="card-body">
+      <div class="card-content">
+        <!-- 标题优化 -->
+        <h3 class="card-title">{{ standard.stdName }}</h3>
+        <!-- 描述优化 -->
+        <p class="card-description">{{ standard.intro }}</p>
+      </div>
+
+      <!-- 按钮组居中显示 -->
+      <div class="button-group">
+        <!-- 如果是历史标准，显示修改参数和删除按钮 -->
+        <el-button 
+          v-if="standard.type === 'history'" 
+          size="small" 
+          type="info" 
+          class="view-button" 
+          @click="viewParameters(standard)"
+          icon="Edit"
+        >
+          查看参数
+        </el-button>
+
+        <el-button 
+          v-if="standard.type === 'history'" 
+          size="small" 
+          type="danger" 
+          @click="deleteStandard(standard)" 
+          class="delete-button"
+          aria-label="删除标准"
+          title="删除标准"
+          icon="Delete"
+        >
+          删除
+        </el-button>
+
+        <!-- 如果是官方标准，显示查看参数按钮 -->
+        <el-button 
+          v-else 
+          size="small" 
+          type="info" 
+          class="view-button" 
+          @click="viewParameters(standard)"
+          icon="Document"
+        >
+          查看参数
+        </el-button>
+      </div>
+    </div>
+  </el-card>
+</el-col>
+
+
         </el-row>
   
    <!-- 固定在左下角的分页器 -->
@@ -133,12 +158,12 @@
             <el-input v-model="formData.stdName" />
           </el-form-item>
   
-          <!-- 参考造价标准下拉框 -->
+          <!-- 参考造价标准下拉框
           <el-form-item label="参考造价标准" :rules="[{ required: true, message: '请选择参考造价标准' }]">
             <el-select v-model="referenceId" placeholder="请选择参考造价标准">
               <el-option v-for="standard in standards" :key="standard.stdId" :label="standard.stdName" :value="standard.stdId" />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
   
   
           <!-- 描述 -->
@@ -152,8 +177,11 @@
           </el-form-item>
   
           <slot name="footer">
-            <div class="dialog-footer">
+            <div slot="footer" class="dialog-footer" style="display: flex; justify-content: space-between; align-items: center;">
+              <!-- 左侧的“取消”按钮 -->
               <el-button @click="closeForm" type="default">取消</el-button>
+              
+              <!-- 右侧的“确定”按钮 -->
               <el-button type="primary" @click="submitForm">确定</el-button>
             </div>
           </slot>
@@ -199,50 +227,54 @@
   
   
      <!-- 修改标准对话框 -->
-    <el-dialog
-      title="修改标准"
-      v-model="ChangeDialogVisible"
-      width="30%"
-      append-to-body
-      @close="resetForm"
+     <el-dialog
+  title="修改标准"
+  v-model="ChangeDialogVisible"
+  width="30%"
+  append-to-body
+  @close="resetForm"
+>
+  <!-- 修改标准表单 -->
+  <el-form
+    ref="editForm"
+    label-width="120px"
+  >
+    <!-- 标准名称 -->
+    <el-form-item
+      label="标准名称"
+      :rules="[{ required: true, message: '请输入标准名称', trigger: 'blur' }]"
     >
-      <!-- 修改标准表单 -->
-      <el-form
-        V-model="editForm"
-        :rules="rules"
-        ref="editForm"
-        label-width="120px"
-      >
-        <!-- 标准名称 -->
-        <el-form-item
-          label="标准名称"
-          prop="stdName"
-          :rules="[{ required: true, message: '请输入标准名称', trigger: 'blur' }]"
-        >
-          <el-input v-model="editForm.stdName" placeholder="请输入标准名称" />
-        </el-form-item>
-  
-        <!-- 描述 -->
-        <el-form-item
-          label="简介"
-          prop="intro"
-          :rules="[{ required: true, message: '请输入标准描述', trigger: 'blur' }]"
-        >
-          <el-input
-            type="textarea"
-            v-model="editForm.intro"
-            placeholder="请输入标准描述"
-            rows="3"
-          />
-        </el-form-item>
-      </el-form>
-  
-      <!-- 对话框底部按钮 -->
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeDialog">取消</el-button>
-        <el-button type="primary" @click="submitEdit">确定</el-button>
-      </div>
-    </el-dialog>
+      <el-input
+        v-model ="editForm.stdName"  
+        placeholder="请输入标准名称"
+      />
+    </el-form-item>
+
+    <!-- 描述 -->
+    <el-form-item
+      label="描述"
+      :rules="[{ required: true, message: '请输入标准描述', trigger: 'blur' }]"
+    >
+      <el-input
+        type="textarea"
+        v-model.lazy="editForm.intro"  
+        placeholder="请输入标准描述"
+        rows="3"
+      />
+    </el-form-item>
+  </el-form>
+
+  <!-- 对话框底部按钮 -->
+  <div slot="footer" class="dialog-footer">
+    <!-- 左侧的“取消”按钮 -->
+    <el-button @click="closeDialog" type="default">取消</el-button>
+    
+    <!-- 右侧的“确定”按钮 -->
+    <el-button type="primary" @click="submitEdit">确定</el-button>
+  </div>
+</el-dialog>
+
+
   
     </div>
   </template>
@@ -258,6 +290,7 @@
   import { ElMessageBox, ElMessage } from 'element-plus';
   import axios from 'axios';
   import Tabs from '@/components/tabs/resourcetabs.vue';
+  import { Search, RefreshRight } from "@element-plus/icons-vue";
   
   // 造价标准数据类型
   interface CostStandard {
@@ -301,11 +334,24 @@
         intro: [{ required: true, message: '简介不能为空', trigger: 'blur' }],
       };
   // 当前选中的标准
-  const editForm = ref<CostStandard | null>(null); 
+  const editForm = {               
+        stdName:  '' ,
+        intro: ''
+      };
   // 定义 props 的类型
   const props = defineProps<{
     standard: CostStandard;
   }>();
+  //赋值用的标准
+  const editstandard = ref<CostStandard>({
+    stdId: 0,  // 新增时没有ID
+    stdName: '',
+    pdr: 0.0,
+    createTime: '',
+    intro: '',
+    type: 'history',  // 默认选择为历史类型
+    enable: 'enabled'  // 默认启用
+  });
   
   
   // 造价标准列表
@@ -455,26 +501,29 @@
   
   // 提交修改
   const submitEdit = async () => {
-        const valid = await (ref('editForm') as any).validate();
-        if (valid) {
-          try {
-            const response = await axios.post('http://localhost:9000/CostStandard/update', {
-              ...editForm.value,
-            });
-            if (response.data.isOk) {
-              ElMessage.success('修改成功');
-              ChangeDialogVisible.value = false; // 关闭对话框
-              // 触发更新事件，传递更新后的标准
-              props.$emit('update', editForm.value);
-            } else {
-              ElMessage.error('修改失败: ' + response.data.msg);
+    editstandard.value.stdName = editForm.stdName;
+    editstandard.value.intro = editForm.intro;
+    console.log(editstandard.value.intro +","+editstandard.value.stdName);
+    const response = await axios.post('http://localhost:9000/CostStandard/updateui', editstandard);
+        const result = response.data;
+        console.log(response.data);
+        if (result.isOk) {
+           // 更新前端列表中的元素
+            const updatedStandard = editstandard.value;  // 获取更新后的标准数据
+            const index = standards.value.findIndex(standard => standard.stdId === updatedStandard.stdId);  // 假设每个标准有唯一的 id
+            if (index !== -1) {
+              // 更新标准列表中对应元素的值
+              standards.value[index] = { ...standards.value[index], ...updatedStandard };
             }
-          } catch (error) {
-            console.error('修改失败:', error);
-            ElMessage.error('请求失败，请稍后再试');
-          }
+
+      // 关闭表单
+          closeForm();
+          ElMessage.success('修改成功');
+        } else {
+          ElMessage.error('修改失败: ' + result.msg);
         }
-      };
+
+};
   
   // 关闭表单
   const closeForm = () => {
@@ -482,7 +531,7 @@
   };
   // 重置表单
   const resetForm = () => {
-      editForm.value = { ...props.standard };
+      
   };
   
   //关闭修改对话框
@@ -506,12 +555,11 @@
     statusQuery.value = '';
   };
   
-  // 处理查看参数/修改参数事件
+
   // 修改参数
   const editParameters = (standard: CostStandard) => {
-    console.log(`修改标准 ${standard.stdName} 的参数`);
+    editstandard.value = { ...editstandard.value, ...standard }; // 保留原有结构并覆盖相应字段
     ChangeDialogVisible.value = true;
-    editForm.value = standard;
     // 这里你可以打开一个编辑参数的表单或弹窗
   };
   
@@ -570,58 +618,60 @@
   
   // 删除标准
   const deleteStandard = async (standard: CostStandard) => {
-    try {
-      // 使用 ElMessageBox 弹出确认框
-      const result = await ElMessageBox.confirm(
-        `确认删除标准：${standard.stdName} 吗？`, // 弹窗提示文本
-        '提示',  // 弹窗标题
-        {
-          confirmButtonText: '确定',  // 确认按钮文本
-          cancelButtonText: '取消',  // 取消按钮文本
-          type: 'warning',  // 弹窗类型，可选 'warning', 'info', 'success', 'error'
-        }
-      );
-  
-      // 用户点击“确定”时执行删除操作
-      if (result === 'confirm') {
-        // 发送删除请求到后端，传递标准对象
-        const response = await axios.request({
-          method: 'post',
-          url: 'http://localhost:9000/CostStandard/delete',
-          data: standard,  // 将标准对象作为请求体传递
-        });
-  
-        if (response.data.isOk) {
-          const response2 = await axios.request({
-            method: 'post',
-            url: 'http://localhost:9000/Factor/delete',
-            headers: {
-              'Content-Type': 'application/json', // 明确指定内容类型
-            },
-            data: standard.stdId, // 确保标准对象中的 stdId 是一个整数,
-        });
-        console.log(standard.stdId + "-");
-        console.log(response2.data);
-          if (response2.data.isOk) {
-            console.log(standard.stdId);
-            // 如果删除成功，在前端列表中删除该标准
-            const index = standards.value.findIndex(item => item.stdId === standard.stdId);
-            if (index !== -1) {
-              standards.value.splice(index, 1);  // 删除标准
-              ElMessage.success('删除成功');
-            }
-          }else{
-            ElMessage.error('删除失败: ' + response2.data.msg);
-          }
-        } else {
-          ElMessage.error('删除失败: ' + response.data.msg);
-        }
+  try {
+    // 使用 ElMessageBox 弹出确认框
+    await ElMessageBox.confirm(
+      `确认删除标准：${standard.stdName} 吗？`, // 弹窗提示文本
+      '提示', // 弹窗标题
+      {
+        confirmButtonText: '确定', // 确认按钮文本
+        cancelButtonText: '取消', // 取消按钮文本
+        type: 'warning', // 弹窗类型
       }
-    } catch (error) {
-      console.error('删除失败:', error);
-      ElMessage.error('删除失败，请稍后再试');
+    );
+
+    // 如果用户点击“确定”，执行删除操作
+    const response = await axios.request({
+      method: 'post',
+      url: 'http://localhost:9000/CostStandard/delete',
+      data: standard, // 将标准对象作为请求体传递
+    });
+
+    if (response.data.isOk) {
+      // 删除关联的 Factor 数据
+      const response2 = await axios.request({
+        method: 'post',
+        url: 'http://localhost:9000/Factor/delete',
+        headers: {
+          'Content-Type': 'application/json', // 明确指定内容类型
+        },
+        data: standard.stdId, // 传递标准 ID
+      });
+
+      if (response2.data.isOk) {
+        // 前端更新标准列表
+        const index = standards.value.findIndex(item => item.stdId === standard.stdId);
+        if (index !== -1) {
+          standards.value.splice(index, 1); // 删除标准
+          ElMessage.success('删除成功');
+        }
+      } else {
+        ElMessage.error('删除失败: ' + response2.data.msg);
+      }
+    } else {
+      ElMessage.error('删除失败: ' + response.data.msg);
     }
-  };
+  } catch (error) {
+    // 区分用户取消和其他错误
+    if (error === 'cancel') {
+      // ElMessage.info('已取消删除操作'); // 用户取消操作
+    } else {
+      console.error('删除失败:', error);
+      ElMessage.error('删除失败，请稍后再试'); // 真正的异常处理
+    }
+  }
+};
+
   </script>
   
     
@@ -653,36 +703,12 @@
       align-items: center;
     }
   
-    /* 标准卡片样式 */
-    .standard-card {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 180px;
-      padding: 10px;
-    }
-  
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      align-items: center;
-    }
-  
+
     .status {
       color: #409eff;
       font-size: 14px;
     }
-  
-    /* 标准卡片内容样式 */
-    .card-body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      flex-grow: 1;
-    }
-  
+ 
     .card-content {
       text-align: center;
     }
@@ -720,26 +746,19 @@
       margin-left: 10px; /* 为按钮添加左边距 */
     }
   }
-  /* 按钮容器 */
-  .button-group {
-    display: flex;               /* 使用 flexbox 布局 */
-    justify-content: space-between; /* 按钮之间分隔 */
-    gap: 10px;                    /* 给按钮之间添加间距 */
-    margin-top: auto;             /* 按钮区域放置在卡片底部 */
-  }
-  
-  /* 删除按钮样式 */
-  .delete-button {
-    border: 1px solid #f56c6c; /* 给按钮添加红色边框 */
-    color: #f56c6c; /* 设置文字颜色为红色 */
-    cursor: pointer;
-    background-color: transparent; /* 背景透明 */
-    padding: 5px; /* 给按钮增加一些内边距 */
-    display: flex; /* 使用 flexbox 让文本居中 */
-    justify-content: center;
-    align-items: center;
-    font-size: 16px; /* 设置字体大小 */
-  }
+  /* 按钮组居中 */
+.button-group {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  gap: 8px; /* 按钮间隔 */
+  margin-top: 10px;
+}
+
+/* 按钮样式优化 */
+.view-button, .delete-button {
+  border-radius: 6px;
+}
+
   
   /* 鼠标悬浮时，改变文字颜色 */
   .delete-button:hover {
@@ -773,6 +792,65 @@
     bottom: 20px;  /* 离页面底部20px */
     z-index: 1000; /* 确保在页面上层显示 */
   }
+
+  .custom-divider {
+  margin: 10px 0; /* 设置上下间距 */
+  border: none; /* 移除默认边框 */
+  border-top: 1px solid #409EFF; /* 蓝色边框 */
+}
+
+/* 卡片整体样式 */
+.standard-card {
+  border: 1px solid #FFEB3B; 
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.standard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+
+/* 分隔线 */
+.divider {
+  height: 1px;
+  background-color: #dcdfe6;
+  margin: 8px 0;
+}
+
+/* 标题 */
+.card-title {
+  font-size: 1.2em;
+  color: #303133;
+  margin-bottom: 6px;
+}
+
+/* 描述 */
+.card-description {
+  font-size: 0.9em;
+  color: #606266;
+  line-height: 1.5;
+}
+
+/* 类型标签样式 */
+.official-type {
+  color: #409EFF;
+}
+
+.custom-type {
+  color: #E6A23C;
+}
+
+
   
   </style>
   
