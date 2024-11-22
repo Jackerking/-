@@ -328,6 +328,12 @@ const addFC = async () => {
 
     const res = await axios.post('http://localhost:9000/fc/add', fc);
     if (res.data.isok) {
+      ufcSource.value = res.data.totalUnadjusted;
+      console.log(ufcSource.value);
+                
+      usSource.value = res.data.totalAdjusted;
+      localStorage.setItem('ufcSource', JSON.stringify(ufcSource.value));
+      localStorage.setItem('usSource', JSON.stringify(usSource.value));
       ElMessage.success("添加成功");
       location.reload();
       loadMenus(); // 重新加载列表
@@ -381,6 +387,12 @@ const editFC = async () => {
     fc.append('totalAdjusted', usSource.value);
     const res = await axios.post('http://localhost:9000/fc/update', fc);
     if (res.data.isok) {
+      ufcSource.value = res.data.totalUnadjusted;
+      console.log(ufcSource.value);
+                
+      usSource.value = res.data.totalAdjusted;
+      localStorage.setItem('ufcSource', JSON.stringify(ufcSource.value));
+      localStorage.setItem('usSource', JSON.stringify(usSource.value));
       ElMessage.success("修改成功");
       location.reload();
       loadMenus(); // 重新加载列表

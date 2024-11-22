@@ -28,6 +28,7 @@
                     <el-row :gutter="20">
                         <el-col :span="8">
                             <!-- 第一列：权重输入 -->
+                                <div class="form-title">权重输入</div>
                             <el-form :model="fp" label-width="120px" label-position="left">
                                 <el-form-item label="ILF">
                                     <el-input v-model="fp.ilfWeight" />
@@ -47,7 +48,7 @@
                                 <el-form-item label="规模因子调整">
                                     <el-select v-model="scaleChangeFactor" placeholder="请选择">
                                         <el-option label="估算早期(如概算、预算阶段)，参数为1.39" value="估算早期" />
-                                        <el-option label="结算中期（如投标、项目计划阶段)，参数为1.21" value="估算中期" />
+                                        <el-option label="估算中期（如投标、项目计划阶段)，参数为1.21" value="估算中期" />
                                         <el-option label="估算晚期(如需求分析阶段)，参数为1.10" value="估算晚期" />
                                         <el-option label="项目交付后及运维阶段，参数为1.00" value="项目交付后及运维阶段" />
                                     </el-select>
@@ -57,6 +58,7 @@
                         
                         <el-col :span="8">
                             <!-- 第二列：通用系统因子（第一组） -->
+                            <div class="form-title">通用系统调整因子输入</div>
                             <el-form :model="gp" label-width="120px" label-position="left">
                                 <el-form-item label="数据通信">
                                     <el-input v-model="gp.communication" />
@@ -84,6 +86,7 @@
                         
                         <el-col :span="8">
                             <!-- 第三列：通用系统因子（第二组） -->
+                            <div class="form-title">通用系统调整因子输入</div>
                             <el-form :model="gp" label-width="120px" label-position="left">
                                 
                                 <el-form-item label="易安装性">

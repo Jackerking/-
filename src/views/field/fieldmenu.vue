@@ -127,7 +127,7 @@ const projectInfo = loadProjectInfo();
 
       const formData = new FormData();
       formData.append('file', selectedExcelFile.value);
-
+      formData.append('projectId', projectInfo.projectId); // 传递 projectId 参数
       try {
         const response = await axios.post('/api/upload/excel', formData, {
           headers: {
@@ -136,7 +136,7 @@ const projectInfo = loadProjectInfo();
         });
         console.log('Excel file uploaded successfully:', response.data);
         router.push({
-          path: '/fielddetail',
+          path: '/FunctionPointEvaluation',
           query: {
             fileId: response.data.id,
           }

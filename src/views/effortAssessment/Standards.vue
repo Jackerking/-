@@ -49,7 +49,7 @@
   <el-dialog
     v-model="dialogVisible"
     @opened="handleOpened"
-    title="流程图"
+    title="评估结果"
     width="1200px"
     top="5vh"
   >

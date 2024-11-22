@@ -4,6 +4,7 @@ import * as echarts from 'echarts';
 import Tabs from '@/components/tabs/tabs.vue';
 import { useRouter, useRoute } from 'vue-router';
 import VueOfficeDocx from "@vue-office/docx";
+import VueOfficeExcel from "@vue-office/excel";
 import "@vue-office/docx/lib/index.css";
 import { ElMessage,ElMessageBox } from 'element-plus';
 import axios from 'axios';
@@ -188,13 +189,21 @@ onMounted(async() => {
       const project = response.data.project;
       // 从返回的项目数据中提取 file_path
       const filePath = project.filePath;
+      
       // 如果 filePath 存在，并且包含指定的前缀，则替换掉前缀
       const prefix = "C:\\Users\\93229\\Desktop\\aaaaa\\ProductConsrtuct_frontend\\public";
+      
       if (filePath && filePath.startsWith(prefix)) {
-        docxSrc.value = filePath.replace(prefix, '');  // 去掉指定的前缀
+        docxSrc1.value = filePath.replace(prefix, '');  // 去掉指定的前缀
+        console.log(docxSrc1.value)
+        // 获取文件类型（扩展名）
+  fileType.value = docxSrc1.value.substring(docxSrc1.value.lastIndexOf('.') + 1);
+      if (fileType.value === 'docx') {
+            docxSrc.value = filePath.replace(prefix, '');
+          } else if (fileType.value === 'xlsx') {
+          excelSrc.value = filePath.replace(prefix, '');
+         }
       }
-      // 确保去掉前缀后的 filePath 是字符串类型
-      docxSrc.value = String(docxSrc.value);
       //计算SDC
       SDC.value=Number(project.ae)*Number(project.personnelCosts)+2;
       //查看是否已有数据
@@ -237,6 +246,9 @@ const goBack = () => {
 };
 // 设置本地文件的路径
 let docxSrc = ref(); // 示例文件路径
+const docxSrc1 = ref(); // 示例文件路径
+const excelSrc=ref()
+const fileType=ref()
 </script>
 
 <template>
@@ -263,7 +275,8 @@ let docxSrc = ref(); // 示例文件路径
   <div class="container">
     <!-- 左侧文档区域 -->
     <div class="docx-container">
-      <VueOfficeDocx :src="docxSrc" />
+      <VueOfficeDocx  v-if="fileType === 'docx'"       :src="docxSrc" />
+      <VueOfficeExcel v-else-if="fileType === 'xlsx'" :src="excelSrc"/>
     </div>
 
     <!-- 右侧区域 -->

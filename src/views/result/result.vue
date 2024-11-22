@@ -58,8 +58,8 @@ const infoCards = reactive([
   { title: '调整后规模', value: 0, unit: '功能点' },
   { title: '人月单价', value: 0, unit: '人月' },
   { title: '调整后工作量', value: 0, unit: '人月' },
-  { title: '软件开发费用', value: 0, unit: '万元' },
-  { title: '功能点单价', value: 0, unit: '万元' },
+  { title: '软件开发费用', value: 0, unit: '元' },
+  { title: '功能点单价', value: 0, unit: '元' },
 ]);
 
 const dialogVisible = ref(false);
@@ -101,10 +101,10 @@ onMounted(async () => {
        project.value = response.data.project;
        project.value.projectTime=formatDate(project.value.projectTime);
       // 动态更新信息卡片的数据
-      infoCards[0].value = project.value.unadjustedFunctionPoints || 0; // 调整前规模
-      infoCards[1].value = project.value.adjustedFunctionPoints || 0;   // 调整后规模
+      infoCards[0].value = project.value.unadjustedFunctionPoints.toFixed(1) || 0; // 调整前规模
+      infoCards[1].value = project.value.adjustedFunctionPoints.toFixed(1) || 0;   // 调整后规模
       infoCards[2].value = project.value.personnelCosts || 0;           // 人月单价
-      infoCards[3].value = project.value.ae || 0; // 调整后工作量 (假设比例)
+      infoCards[3].value = project.value.ae.toFixed(1) || 0; // 调整后工作量 (假设比例)
       infoCards[4].value = (project.value.totalCost).toFixed(2) || 0;                // 软件开发费用
       infoCards[5].value = (project.value.totalCost/project.value.adjustedFunctionPoints).toFixed(2) || 0; // 功能点单价
 
